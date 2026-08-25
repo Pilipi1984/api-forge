@@ -5,7 +5,7 @@ VisualStudioVersion = 18.8.12023.21
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiForge.Api", "ApiForge\ApiForge.Api.csproj", "{F781185D-D623-461D-801B-963A90F945B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiForge.Application", "ApiForge.Application\ApiForge.Application.csproj", "{4CCEDF6A-54CE-43C9-AA34-D8CDCF1349EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiForge.ApplicationCore", "ApiForge.Application\ApiForge.ApplicationCore.csproj", "{4CCEDF6A-54CE-43C9-AA34-D8CDCF1349EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiForge.Domain", "ApiForge.Domain\ApiForge.Domain.csproj", "{4DC97792-2E7E-4872-9240-CC58BF515B49}"
 EndProject
