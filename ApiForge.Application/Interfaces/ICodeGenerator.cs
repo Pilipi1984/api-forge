@@ -1,7 +1,5 @@
-﻿using ApiForge.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ApiForge.Domain.GeneratedApiSolution;
+using ApiForge.Domain.Models;
 
 namespace ApiForge.Application.Interfaces
 {

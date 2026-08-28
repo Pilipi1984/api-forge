@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ApiForge.Domain.GeneratedApiSolution
+﻿namespace ApiForge.Domain.GeneratedApiSolution
 {
     public sealed class GeneratedFile
     {

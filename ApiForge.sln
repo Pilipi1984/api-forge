@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiForge.Domain", "ApiForge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiForge.Infrastructure", "ApiForge.Infrastructure\ApiForge.Infrastructure.csproj", "{ABA4CB0E-FF90-44C5-9538-CC67B6036CFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiForge.Shared", "ApiForge.Shared\ApiForge.Shared.csproj", "{4AFD4501-0A7F-43F3-9C41-6E28BEB57706}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiForge.Tests", "ApiForge.Tests\ApiForge.Tests.csproj", "{D6C41F4A-C7ED-4288-BCC8-2D797CFF65C4}"
 EndProject
 Global
@@ -37,10 +35,6 @@ Global
 		{ABA4CB0E-FF90-44C5-9538-CC67B6036CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABA4CB0E-FF90-44C5-9538-CC67B6036CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABA4CB0E-FF90-44C5-9538-CC67B6036CFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4AFD4501-0A7F-43F3-9C41-6E28BEB57706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AFD4501-0A7F-43F3-9C41-6E28BEB57706}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4AFD4501-0A7F-43F3-9C41-6E28BEB57706}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4AFD4501-0A7F-43F3-9C41-6E28BEB57706}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6C41F4A-C7ED-4288-BCC8-2D797CFF65C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6C41F4A-C7ED-4288-BCC8-2D797CFF65C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6C41F4A-C7ED-4288-BCC8-2D797CFF65C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
