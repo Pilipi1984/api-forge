@@ -1,4 +1,4 @@
-﻿using ApiForge.Domain.Models.ApiParameters.Enums;
+﻿using Microsoft.OpenApi;
 
 namespace ApiForge.Domain.Models.ApiParameters
 {

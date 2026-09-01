@@ -7,18 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Parser\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ApiForge.Application\ApiForge.ApplicationCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="YamlDotNet" Version="12.0.2" />
+    <PackageReference Include="Microsoft.OpenApi" Version="3.10.2" />
+    <PackageReference Include="Microsoft.OpenApi.YamlReader" Version="3.10.2" />
   </ItemGroup>
 
 </Project>

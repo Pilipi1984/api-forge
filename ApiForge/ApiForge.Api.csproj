@@ -7,11 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.OpenApi" Version="3.10.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\ApiForge.Application\ApiForge.ApplicationCore.csproj" />
+    <ProjectReference Include="..\ApiForge.Domain\ApiForge.Domain.csproj" />
+    <ProjectReference Include="..\ApiForge.Infrastructure\ApiForge.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
