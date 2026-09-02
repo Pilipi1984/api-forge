@@ -2,8 +2,16 @@
 
 namespace ApiForge.Infrastructure.Helpers
 {
+    /// <summary>
+    /// Provides helper methods for working with OpenAPI schemas, particularly for determining nullability.
+    /// </summary>
     internal static class OpenApiHelper
     {
+        /// <summary>
+        /// Determines if the given OpenAPI schema is nullable based on its type and unrecognized keywords.
+        /// </summary>
+        /// <param name="schema"></param>
+        /// <returns>returns a value indicating whether the schema is nullable.</returns>
         internal static bool GetNullable(IOpenApiSchema schema)
         {
             if (schema is null)

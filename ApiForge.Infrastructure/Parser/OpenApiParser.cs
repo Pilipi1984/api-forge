@@ -39,6 +39,12 @@ namespace ApiForge.Infrastructure.Parser
             return MapDefinition(result.Document);
         }
 
+        /// <summary>
+        /// Maps an OpenAPI document to an ApiDefinition.
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <returns>Returns the mapped API definition.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         private static ApiDefinition MapDefinition(OpenApiDocument? doc)
         {
             if (doc is null)
@@ -81,6 +87,13 @@ namespace ApiForge.Infrastructure.Parser
             return definition;
         }
 
+        /// <summary>
+        /// Maps an OpenAPI operation to an ApiEndpoint.
+        /// </summary>
+        /// <param name="route"></param>
+        /// <param name="httpMethod"></param>
+        /// <param name="operation"></param>
+        /// <returns>Returns the mapped API endpoint.</returns>
         private static ApiEndpoint MapEndpoint(string route, string httpMethod, OpenApiOperation operation)
         {
             var endpoint = new ApiEndpoint
@@ -110,6 +123,13 @@ namespace ApiForge.Infrastructure.Parser
             return endpoint;
         }
 
+        /// <summary>
+        /// Maps an OpenAPI parameter to an ApiParameter.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns>Returns the mapped API parameter.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
         private static ApiParameter MapParameter(IOpenApiParameter p)
         {
             if (p.Schema is null)
@@ -163,6 +183,12 @@ namespace ApiForge.Infrastructure.Parser
             };
         }
 
+        /// <summary>
+        /// Maps an OpenAPI schema to an ApiSchema.
+        /// </summary>
+        /// <param name="schema"></param>
+        /// <returns>Returns the mapped API schema.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         private static ApiSchema MapSchema(IOpenApiSchema schema)
         {
             // 1. Reference to a reusable schema
@@ -237,6 +263,12 @@ namespace ApiForge.Infrastructure.Parser
             };
         }
 
+        /// <summary>
+        /// Maps a primitive OpenAPI type and format to a corresponding C# type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="format"></param>
+        /// <returns>Returns the mapped C# type.</returns>
         private static string MapPrimitiveClrType(JsonSchemaType? type, string? format) => (type, format) switch
         {
             (JsonSchemaType.String, "date-time") => "DateTimeOffset",
@@ -251,6 +283,12 @@ namespace ApiForge.Infrastructure.Parser
             _ => Object
         };
 
+        /// <summary>
+        /// Maps an OpenAPI schema to an ApiModel.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="schema"></param>
+        /// <returns>Returns the mapped API model.</returns>
         private static ApiModel MapModel(string name, IOpenApiSchema schema)
         {
             return new ApiModel
@@ -262,6 +300,13 @@ namespace ApiForge.Infrastructure.Parser
             };
         }
 
+        /// <summary>
+        /// Maps an OpenAPI schema property to an ApiProperty.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="schema"></param>
+        /// <param name="required"></param>
+        /// <returns>Returns the mapped API property.</returns>
         private static ApiProperty MapProperty(string name, IOpenApiSchema schema, ISet<string>? required)
         {
             return new ApiProperty

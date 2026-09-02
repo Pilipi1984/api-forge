@@ -1,15 +1,22 @@
 ﻿using ApiForge.Domain.GeneratedApiSolution;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ApiForge.Infrastructure.Generator
 {
+    /// <summary>
+    /// Generates project and solution files for a given root namespace, including .csproj files for Domain, 
+    /// Application, Infrastructure, and Client projects, as well as a .sln solution file.
+    /// </summary>
     public static class ProjectFileGenerator
     {
         private const string TargetFramework = "net10.0";
         private const string EndProject = "EndProject";
 
+        /// <summary>
+        /// Generates the .csproj files for the Domain, Application, Infrastructure, and Client projects based on the provided root namespace.
+        /// </summary>
+        /// <param name="rootNamespace"></param>
+        /// <returns>Returns the list of generated project files.</returns>
         public static List<GeneratedFile> GenerateProjectFiles(string rootNamespace)
         {
             var files = new List<GeneratedFile>
@@ -58,6 +65,11 @@ namespace ApiForge.Infrastructure.Generator
             return files;
         }
 
+        /// <summary>
+        /// Generates a .sln solution file that includes the Domain, Application, Infrastructure, and Client projects based on the provided root namespace.
+        /// </summary>
+        /// <param name="rootNamespace"></param>
+        /// <returns>Returns the generated solution file.</returns>
         public static GeneratedFile GenerateSolutionFile(string rootNamespace)
         {
             var domainGuid = Guid.NewGuid().ToString("B").ToUpperInvariant();
@@ -99,6 +111,14 @@ namespace ApiForge.Infrastructure.Generator
             return new GeneratedFile { RelativePath = $"{rootNamespace}.sln", Content = sb.ToString() };
         }
 
+        /// <summary>
+        /// Builds the content of a .csproj file based on the provided target framework, project references, package references, and output type.
+        /// </summary>
+        /// <param name="targetFramework"></param>
+        /// <param name="projectReferences"></param>
+        /// <param name="packageReferences"></param>
+        /// <param name="outputType"></param>
+        /// <returns>Returns the generated .csproj content.</returns>
         private static string BuildCsproj(
             string targetFramework,
             IEnumerable<string>? projectReferences = null,

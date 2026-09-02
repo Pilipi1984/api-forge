@@ -1,13 +1,19 @@
 ﻿using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Infrastructure.Generator.Planning;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ApiForge.Infrastructure.Generator
 {
+    /// <summary>
+    /// Generates the dependency injection extension method for registering API clients in the service collection, based on the provided solution plan.
+    /// </summary>
     public static class DependencyInjectionGenerator
     {
+        /// <summary>
+        /// Generates the dependency injection extension method for registering API clients in the service collection, based on the provided solution plan.
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <returns>Returns the generated dependency injection file.</returns>
         public static GeneratedFile Generate(SolutionPlan plan)
         {
             var interfacesNamespace = $"{plan.RootNamespace}.Application.Interfaces";

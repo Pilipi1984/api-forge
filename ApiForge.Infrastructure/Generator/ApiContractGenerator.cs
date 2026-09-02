@@ -5,8 +5,17 @@ using System.Text;
 
 namespace ApiForge.Infrastructure.Generator
 {
+    /// <summary>
+    /// Generates C# interface files for API contracts based on the provided solution plan, 
+    /// creating an interface for each group of endpoints with methods corresponding to the defined endpoints.
+    /// </summary>
     public static class ApiContractGenerator
     {
+        /// <summary>
+        /// Generates C# interface files for API contracts based on the provided solution plan.
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <returns>Returns a list of generated files.</returns>
         public static List<GeneratedFile> Generate(SolutionPlan plan)
         {
             var files = new List<GeneratedFile>();

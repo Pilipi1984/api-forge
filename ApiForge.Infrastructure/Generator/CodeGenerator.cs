@@ -6,8 +6,17 @@ using ApiForge.Infrastructure.Helpers;
 
 namespace ApiForge.Infrastructure.Generator
 {
+    /// <summary>
+    /// Generates a complete C# solution based on the provided API definition, including domain models, 
+    /// API contracts, client implementations, dependency injection setup, and project files.
+    /// </summary>
     public class CodeGenerator : ICodeGenerator
     {
+        /// <summary>
+        /// Generates a complete C# solution based on the provided API definition.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <returns>Returns the generated solution.</returns>
         public Task<GeneratedSolution> GenerateAsync(ApiDefinition definition)
         {
             ArgumentNullException.ThrowIfNull(definition);

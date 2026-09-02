@@ -5,8 +5,17 @@ using System.Text;
 
 namespace ApiForge.Infrastructure.Generator
 {
+    /// <summary>
+    /// Generates C# implementation files for API clients based on the provided solution plan, 
+    /// creating a class for each group of endpoints that implements the corresponding interface and handles HTTP requests and responses.
+    /// </summary>
     public static class ApiClientImplementationGenerator
     {
+        /// <summary>
+        /// Generates C# implementation files for API clients based on the provided solution plan.
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <returns>Returns a list of generated files.</returns>
         public static List<GeneratedFile> Generate(SolutionPlan plan)
         {
             var files = new List<GeneratedFile>();
@@ -56,6 +65,11 @@ namespace ApiForge.Infrastructure.Generator
             return files;
         }
 
+        /// <summary>
+        /// Appends a method implementation for the given endpoint to the provided StringBuilder, generating the necessary HTTP request and response handling code.
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="endpoint"></param>
         private static void AppendMethod(StringBuilder sb, Planning.EndpointPlan endpoint)
         {
             var signatureParams = EndpointSignatureHelper.BuildParameterList(endpoint);
@@ -103,6 +117,12 @@ namespace ApiForge.Infrastructure.Generator
             sb.AppendLine("        }");
         }
 
+        /// <summary>
+        /// Builds a path expression for the given endpoint by replacing path parameter 
+        /// placeholders with their corresponding names, returning a string that can be used in the generated method implementation.
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <returns>Returns the generated path expression.</returns>
         private static string BuildPathExpression(Planning.EndpointPlan endpoint)
         {
             var template = endpoint.Route.TrimStart('/');
@@ -112,6 +132,11 @@ namespace ApiForge.Infrastructure.Generator
             return $"$\"{template}\"";
         }
 
+        /// <summary>
+        /// Converts an HTTP method string to its corresponding HttpMethod expression in C#, returning a string that can be used in the generated method implementation.
+        /// </summary>
+        /// <param name="httpMethod"></param>
+        /// <returns>Returns the generated HttpMethod expression.</returns>
         private static string ToHttpMethodExpression(string httpMethod) => httpMethod.ToUpperInvariant() switch
         {
             "GET" => "HttpMethod.Get",

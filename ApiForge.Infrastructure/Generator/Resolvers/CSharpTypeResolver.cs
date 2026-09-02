@@ -35,12 +35,22 @@ namespace ApiForge.Infrastructure.Generator.Resolvers
             return schema.Nullable ? baseType + "?" : baseType;
         }
 
+        /// <summary>
+        /// Resolves the C# type for a given API property, considering its nullability.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns>Returns the resolved C# type.</returns>
         public static string ResolveProperty(ApiProperty property)
         {
             var baseType = NormalizePrimitive(property.Type);
             return property.Nullable ? baseType + "?" : baseType;
         }
 
+        /// <summary>
+        /// Normalizes primitive CLR types to their corresponding C# type names.
+        /// </summary>
+        /// <param name="clrType"></param>
+        /// <returns>Returns the normalized C# type name.</returns>
         public static string NormalizePrimitive(string? clrType)
         {
             if (string.IsNullOrWhiteSpace(clrType))

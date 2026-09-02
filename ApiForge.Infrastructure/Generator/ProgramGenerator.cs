@@ -4,8 +4,17 @@ using System.Text;
 
 namespace ApiForge.Infrastructure.Generator
 {
+    /// <summary>
+    /// Generates the Program.cs file for the generated API client, including service registration and a placeholder for the base address configuration.
+    /// </summary>
     public static class ProgramGenerator
     {
+        /// <summary>
+        /// Generates the Program.cs file for the generated API client, including service registration and a placeholder for the base address configuration.
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <param name="rootNamespace"></param>
+        /// <returns>Returns the generated Program.cs file.</returns>
         public static GeneratedFile Generate(SolutionPlan plan, string rootNamespace)
         {
             var sb = new StringBuilder();
