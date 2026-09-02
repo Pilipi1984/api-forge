@@ -2,6 +2,7 @@
 using ApiForge.Domain.Models;
 using ApiForge.Domain.Models.ApiParameters;
 using ApiForge.Domain.Models.Schema;
+using ApiForge.Infrastructure.Helpers;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Reader;
 
@@ -16,23 +17,30 @@ namespace ApiForge.Infrastructure.Parser
 
             var result = await OpenApiDocument.LoadAsync(stream, settings: settings);
 
-            if (result.Document is null)
+            if (result.Document is { })
+            {
                 throw new InvalidOperationException(
-                    "No se pudo parsear el documento OpenAPI: " +
+                    "OpenAPI document could not be parsed: " +
                     string.Join(", ", result.Diagnostic?.Errors.Select(e => e.Message) ?? Enumerable.Empty<string>()));
+            }
 
             return MapDefinition(result.Document);
         }
 
-        private static ApiDefinition MapDefinition(OpenApiDocument doc)
+        private static ApiDefinition MapDefinition(OpenApiDocument? doc)
         {
+            if (doc is null)
+            {
+                throw new InvalidOperationException("OpenAPI document is null.");
+            }
+
             var definition = new ApiDefinition
             {
                 Title = doc.Info?.Title ?? string.Empty,
                 Version = doc.Info?.Version ?? string.Empty,
             };
 
-            // 1. Modelos reutilizables (components/schemas)
+            // 1. Reusable models (components/schemas)
             if (doc.Components?.Schemas is not null)
             {
                 foreach (var (name, schema) in doc.Components.Schemas)
@@ -139,13 +147,13 @@ namespace ApiForge.Infrastructure.Parser
                     Required = p.Required,
                     Description = p.Description
                 },
-                _ => throw new NotSupportedException($"Ubicación no soportada: {p.In}")
+                _ => throw new NotSupportedException($"Location not supported: {p.In}")
             };
         }
 
         private static ApiSchema MapSchema(IOpenApiSchema schema)
         {
-            // 1. Referencia a un modelo definido en components/schemas
+            // 1. Reference to a reusable schema
             if (schema is OpenApiSchemaReference reference)
             {
                 if (reference.Reference is null)
@@ -174,7 +182,7 @@ namespace ApiForge.Infrastructure.Parser
                     OpenApiType = schema.Type?.ToString() ?? "string",
                     ClrType = schema.Type?.ToString() ?? "string",
                     Values = schema.Enum.Select(v => v.ToString() ?? string.Empty).ToList(),
-                    Nullable = GetNullable(schema),
+                    Nullable = OpenApiHelper.GetNullable(schema),
                     Description = schema.Description
                 };
             }
@@ -187,7 +195,7 @@ namespace ApiForge.Infrastructure.Parser
                     OpenApiType = "array",
                     ClrType = "array",
                     ItemSchema = MapSchema(schema.Items),
-                    Nullable = GetNullable(schema),
+                    Nullable = OpenApiHelper.GetNullable(schema),
                     Description = schema.Description
                 };
             }
@@ -202,17 +210,17 @@ namespace ApiForge.Infrastructure.Parser
                     Properties = schema.Properties?
                         .Select(kv => MapProperty(kv.Key, kv.Value, schema.Required))
                         .ToList() ?? new List<ApiProperty>(),
-                    Nullable = GetNullable(schema),
+                    Nullable = OpenApiHelper.GetNullable(schema),
                     Description = schema.Description
                 };
             }
 
-            // 5. Primitivo (string, integer, number, boolean)
+            // 5. Primitive (string, integer, number, boolean)
             return new PrimitiveSchema
             {
                 OpenApiType = schema.Type?.ToString() ?? "string",
                 ClrType = MapPrimitiveClrType(schema.Type, schema.Format),
-                Nullable = GetNullable(schema),
+                Nullable = OpenApiHelper.GetNullable(schema),
                 Description = schema.Description
             };
         }
@@ -238,7 +246,7 @@ namespace ApiForge.Infrastructure.Parser
                 Name = name,
                 Properties = schema.Properties?
                     .Select(kv => MapProperty(kv.Key, kv.Value, schema.Required))
-                    .ToList() ?? new List<ApiProperty>()
+                    .ToList() ?? []
             };
         }
 
@@ -249,33 +257,11 @@ namespace ApiForge.Infrastructure.Parser
                 Name = name,
                 Type = MapPrimitiveClrType(schema.Type, schema.Format),
                 Required = required?.Contains(name) ?? false,
-                Nullable = GetNullable(schema),
+                Nullable = OpenApiHelper.GetNullable(schema),
                 Format = schema.Format,
                 Description = schema.Description,
                 DefaultValue = schema.Default
             };
-        }
-
-        // Helper para compatibilidad: determina si el esquema es nullable
-        private static bool GetNullable(IOpenApiSchema schema)
-        {
-            if (schema is null) return false;
-
-            // Si el tipo explícito indica Null
-            if (schema.Type == JsonSchemaType.Null) return true;
-
-            // Si existe la palabra clave "nullable" en UnrecognizedKeywords (OpenAPI v3.0)
-            if (schema.UnrecognizedKeywords != null && schema.UnrecognizedKeywords.TryGetValue("nullable", out var node))
-            {
-                if (node is not null)
-                {
-                    var txt = node.ToString();
-                    if (bool.TryParse(txt, out var b)) return b;
-                    if (string.Equals(txt, "true", StringComparison.OrdinalIgnoreCase) || txt == "1") return true;
-                }
-            }
-
-            return false;
         }
     }
 }

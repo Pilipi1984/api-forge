@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ApiForge.ApplicationCore.DTOs.Responses;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ApiForge.Api.Controllers
 {
@@ -13,24 +14,15 @@ namespace ApiForge.Api.Controllers
         {
             var response = new StatusResponse
             {
-                Status = "Healthy",
+                Status = "OK",
                 Version = typeof(StatusController).Assembly.GetName().Version?.ToString() ?? "unknown",
                 Environment = HttpContext.RequestServices
                     .GetRequiredService<IWebHostEnvironment>().EnvironmentName,
-                UtcTimestamp = DateTimeOffset.UtcNow,
-                Uptime = DateTimeOffset.UtcNow - StartedAt
+                UtcTimestamp = DateTime.UtcNow,
+                Uptime = DateTime.UtcNow - StartedAt
             };
 
             return Ok(response);
         }
-    }
-
-    public sealed class StatusResponse
-    {
-        public required string Status { get; init; }
-        public required string Version { get; init; }
-        public required string Environment { get; init; }
-        public required DateTimeOffset UtcTimestamp { get; init; }
-        public required TimeSpan Uptime { get; init; }
     }
 }
