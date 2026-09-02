@@ -7,6 +7,9 @@ namespace ApiForge.Infrastructure.Generator
 {
     public static class ProjectFileGenerator
     {
+        private const string TargetFramework = "net10.0";
+        private const string EndProject = "EndProject";
+
         public static List<GeneratedFile> GenerateProjectFiles(string rootNamespace)
         {
             var files = new List<GeneratedFile>
@@ -14,18 +17,18 @@ namespace ApiForge.Infrastructure.Generator
                 new()
                 {
                     RelativePath = $"{rootNamespace}.Domain/{rootNamespace}.Domain.csproj",
-                    Content = BuildCsproj("net10.0")
+                    Content = BuildCsproj(TargetFramework)
                 },
                 new()
                 {
                     RelativePath = $"{rootNamespace}.Application/{rootNamespace}.Application.csproj",
-                    Content = BuildCsproj("net10.0",
+                    Content = BuildCsproj(TargetFramework,
                         projectReferences: new[] { $@"..\{rootNamespace}.Domain\{rootNamespace}.Domain.csproj" })
                 },
                 new()
                 {
                     RelativePath = $"{rootNamespace}.Infrastructure/{rootNamespace}.Infrastructure.csproj",
-                    Content = BuildCsproj("net10.0",
+                    Content = BuildCsproj(TargetFramework,
                         projectReferences: new[]
                         {
                             $@"..\{rootNamespace}.Domain\{rootNamespace}.Domain.csproj",
@@ -67,13 +70,13 @@ namespace ApiForge.Infrastructure.Generator
             sb.AppendLine();
             sb.AppendLine("Microsoft Visual Studio Solution File, Format Version 12.00");
             sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{rootNamespace}.Domain\", \"{rootNamespace}.Domain\\{rootNamespace}.Domain.csproj\", \"{domainGuid}\"");
-            sb.AppendLine("EndProject");
+            sb.AppendLine(EndProject);
             sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{rootNamespace}.Application\", \"{rootNamespace}.Application\\{rootNamespace}.Application.csproj\", \"{applicationGuid}\"");
-            sb.AppendLine("EndProject");
+            sb.AppendLine(EndProject);
             sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{rootNamespace}.Infrastructure\", \"{rootNamespace}.Infrastructure\\{rootNamespace}.Infrastructure.csproj\", \"{infrastructureGuid}\"");
-            sb.AppendLine("EndProject");
+            sb.AppendLine(EndProject);
             sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{rootNamespace}.Client\", \"{rootNamespace}.Client\\{rootNamespace}.Client.csproj\", \"{clientGuid}\"");
-            sb.AppendLine("EndProject");
+            sb.AppendLine(EndProject);
             sb.AppendLine("Global");
             sb.AppendLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
             sb.AppendLine("\t\tDebug|Any CPU = Debug|Any CPU");

@@ -8,8 +8,20 @@ using Microsoft.OpenApi.Reader;
 
 namespace ApiForge.Infrastructure.Parser
 {
+    /// <summary>
+    /// Parses OpenAPI documents and maps them to the internal API definition model.
+    /// </summary>
     public class OpenApiParser : IOpenApiParser
     {
+        private const string Object = "object";
+        private const string StringTypename = "string";
+
+        /// <summary>
+        /// Parses an OpenAPI document from a stream and maps it to an ApiDefinition.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns>The parsed API definition.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<ApiDefinition> ParseAsync(Stream stream)
         {
             var settings = new OpenApiReaderSettings();
@@ -169,7 +181,7 @@ namespace ApiForge.Infrastructure.Parser
                 return new ReferenceSchema
                 {
                     ReferenceName = reference.Reference.Id,
-                    OpenApiType = "object",
+                    OpenApiType = Object,
                     ClrType = reference.Reference.Id
                 };
             }
@@ -179,8 +191,8 @@ namespace ApiForge.Infrastructure.Parser
             {
                 return new EnumSchema
                 {
-                    OpenApiType = schema.Type?.ToString() ?? "string",
-                    ClrType = schema.Type?.ToString() ?? "string",
+                    OpenApiType = schema.Type?.ToString() ?? StringTypename,
+                    ClrType = schema.Type?.ToString() ?? StringTypename,
                     Values = schema.Enum.Select(v => v.ToString() ?? string.Empty).ToList(),
                     Nullable = OpenApiHelper.GetNullable(schema),
                     Description = schema.Description
@@ -205,8 +217,8 @@ namespace ApiForge.Infrastructure.Parser
             {
                 return new ObjectSchema
                 {
-                    OpenApiType = "object",
-                    ClrType = "object",
+                    OpenApiType = Object,
+                    ClrType = Object,
                     Properties = schema.Properties?
                         .Select(kv => MapProperty(kv.Key, kv.Value, schema.Required))
                         .ToList() ?? new List<ApiProperty>(),
@@ -218,7 +230,7 @@ namespace ApiForge.Infrastructure.Parser
             // 5. Primitive (string, integer, number, boolean)
             return new PrimitiveSchema
             {
-                OpenApiType = schema.Type?.ToString() ?? "string",
+                OpenApiType = schema.Type?.ToString() ?? StringTypename,
                 ClrType = MapPrimitiveClrType(schema.Type, schema.Format),
                 Nullable = OpenApiHelper.GetNullable(schema),
                 Description = schema.Description
@@ -230,13 +242,13 @@ namespace ApiForge.Infrastructure.Parser
             (JsonSchemaType.String, "date-time") => "DateTimeOffset",
             (JsonSchemaType.String, "date") => "DateOnly",
             (JsonSchemaType.String, "uuid") => "Guid",
-            (JsonSchemaType.String, _) => "string",
+            (JsonSchemaType.String, _) => StringTypename,
             (JsonSchemaType.Integer, "int64") => "long",
             (JsonSchemaType.Integer, _) => "int",
             (JsonSchemaType.Number, "float") => "float",
             (JsonSchemaType.Number, _) => "double",
             (JsonSchemaType.Boolean, _) => "bool",
-            _ => "object"
+            _ => Object
         };
 
         private static ApiModel MapModel(string name, IOpenApiSchema schema)
