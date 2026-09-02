@@ -21,8 +21,15 @@ namespace ApiForge.Infrastructure.Helpers
             if (schema.UnrecognizedKeywords is not null && schema.UnrecognizedKeywords.TryGetValue("nullable", out var node) && node is not null)
             {
                 var txt = node.ToString();
-                if (bool.TryParse(txt, out var b)) return b;
-                if (string.Equals(txt, "true", StringComparison.OrdinalIgnoreCase) || txt == "1") return true;
+                if (bool.TryParse(txt, out var b))
+                {
+                    return b;
+                }
+
+                if (string.Equals(txt, "true", StringComparison.OrdinalIgnoreCase) || txt == "1")
+                {
+                    return true;
+                }
             }
 
             return false;

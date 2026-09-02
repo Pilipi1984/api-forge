@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - DEV-1
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -40,9 +39,9 @@ jobs:
           dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
       - name: Build and analyze
         env:
-          SONAR_SECRET: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Pilipi1984_api-forge" /o:"pilipi1984" /d:sonar.token="$SONAR_SECRET"
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Pilipi1984_api-forge" /o:"pilipi1984" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           dotnet build
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="$SONAR_SECRET"
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
