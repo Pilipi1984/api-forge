@@ -29,7 +29,7 @@ namespace ApiForge.Infrastructure.Parser
 
             var result = await OpenApiDocument.LoadAsync(stream, settings: settings);
 
-            if (result.Document is { })
+            if (result.Document is null)
             {
                 throw new InvalidOperationException(
                     "OpenAPI document could not be parsed: " +

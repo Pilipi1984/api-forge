@@ -7,7 +7,7 @@ namespace ApiForge.Infrastructure.Helpers
     /// </summary>
     public static class NameHelper
     {
-        private static readonly char[] Separators = { ' ', '_', '-', '.', '/', '{', '}' };
+        private static readonly char[] Separators = { ' ', '/', '{', '}' };
 
         /// <summary>
         /// A set of C# reserved words that cannot be used as identifiers without escaping. This is used to ensure that generated identifiers do not conflict with C# language keywords.
@@ -40,7 +40,7 @@ namespace ApiForge.Infrastructure.Helpers
             var sb = new StringBuilder();
             foreach (var part in parts)
             {
-                var cleaned = new string(part.Where(char.IsLetterOrDigit).ToArray());
+                var cleaned = new string(part.Where(c => char.IsLetterOrDigit(c) || c == '.' || c == '-' || c == '_').ToArray());
                 if (cleaned.Length == 0)
                 {
                     continue;

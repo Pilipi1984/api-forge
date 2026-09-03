@@ -5,38 +5,51 @@ using ApiForge.Infrastructure.Helpers;
 namespace ApiForge.Infrastructure.Generator.Resolvers
 {
     /// <summary>
-    /// Resolves C# types from API schema definitions.
+    /// Provides methods to resolve C# types from API schema definitions, 
+    /// including handling of references, arrays, enums, objects, and primitive types, while considering nullability.
     /// </summary>
     public static class CSharpTypeResolver
     {
-        private const string Object = "object";
-
         /// <summary>
-        /// Resolves the C# type for a given API schema, considering its nullability and the provided models namespace.
+        /// Resolves the C# type for a given API schema, taking into account the schema type, nullability, and the specified models namespace.
         /// </summary>
         /// <param name="schema"></param>
         /// <param name="modelsNamespace"></param>
-        /// <returns>The resolved C# type.</returns>
+        /// <returns>Returns the resolved C# type.</returns>
         public static string Resolve(ApiSchema? schema, string modelsNamespace)
         {
             if (schema is null)
-                return Object;
+                return "object";
 
             var baseType = schema switch
             {
-                ReferenceSchema reference => $"{modelsNamespace}.{NameHelper.ToPascalCase(reference.ReferenceName)}",
+                ReferenceSchema reference => ResolveReferenceType(reference, modelsNamespace),
                 ArraySchema array => $"List<{Resolve(array.ItemSchema, modelsNamespace)}>",
                 EnumSchema => "string",
-                ObjectSchema => Object,
+                ObjectSchema => "object",
                 PrimitiveSchema primitive => NormalizePrimitive(primitive.ClrType),
-                _ => Object
+                _ => "object"
             };
 
             return schema.Nullable ? baseType + "?" : baseType;
         }
 
         /// <summary>
-        /// Resolves the C# type for a given API property, considering its nullability.
+        /// Resolves the C# type for a reference schema by determining the fully qualified name based on the reference name and the provided models namespace.
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <param name="modelsNamespace"></param>
+        /// <returns>Returns the resolved C# type.</returns>
+        private static string ResolveReferenceType(ReferenceSchema reference, string modelsNamespace)
+        {
+            var resolved = QualifiedNameResolver.Resolve(reference.ReferenceName);
+            var fullNamespace = QualifiedNameResolver.BuildNamespace(modelsNamespace, resolved.NamespaceSegments);
+
+            return $"{fullNamespace}.{resolved.ClassName}";
+        }
+
+        /// <summary>
+        /// Resolves the C# type for a given API property, taking into account the property's type and nullability.
         /// </summary>
         /// <param name="property"></param>
         /// <returns>Returns the resolved C# type.</returns>
@@ -47,14 +60,14 @@ namespace ApiForge.Infrastructure.Generator.Resolvers
         }
 
         /// <summary>
-        /// Normalizes primitive CLR types to their corresponding C# type names.
+        /// Normalizes the primitive type to its C# equivalent.
         /// </summary>
         /// <param name="clrType"></param>
-        /// <returns>Returns the normalized C# type name.</returns>
+        /// <returns>Returns the normalized C# type.</returns>
         public static string NormalizePrimitive(string? clrType)
         {
             if (string.IsNullOrWhiteSpace(clrType))
-                return Object;
+                return "object";
 
             return clrType switch
             {
