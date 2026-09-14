@@ -48,7 +48,7 @@ namespace ApiForge.Api.Controllers
                 }
 
                 memoryStream.Position = 0;
-                return File(memoryStream.ToArray(), "application/zip", $"{solution.Name}{Guid.NewGuid()}.zip");
+                return File(memoryStream.ToArray(), "application/zip", $"{solution.Name}.zip");
             }
             catch (Exception ex)
             {

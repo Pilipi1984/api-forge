@@ -20,6 +20,60 @@ namespace ApiForge.Infrastructure.Helpers
         };
 
         /// <summary>
+        /// Converts a given string to a valid C# namespace name. It splits the input string by periods, sanitizes each segment to remove invalid characters, 
+        /// and ensures that each segment starts with a letter or underscore. If the input is null or empty, it returns a default namespace name "GeneratedApi".
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>Returns the string converted to a valid C# namespace name.</returns>
+        public static string ToSolutionName(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return "GeneratedApi";
+            }
+
+            var segments = value
+                .Split('.')
+                .Select(SanitizeNamespaceSegment)
+                .Where(segment => segment.Length > 0)
+                .ToList();
+
+            return segments.Count == 0 ? "GeneratedApi" : string.Join(".", segments);
+        }
+
+        /// <summary>
+        /// Sanitizes a single segment of a namespace by removing invalid characters and ensuring it starts with a letter or underscore.
+        /// </summary>
+        /// <param name="segment"></param>
+        /// <returns>Returns the sanitized namespace segment.</returns>
+        private static string SanitizeNamespaceSegment(string segment)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var c in segment)
+            {
+                // Los espacios en blanco (y cualquier carácter no alfanumérico/guion bajo) se eliminan.
+                if (char.IsLetterOrDigit(c) || c == '_')
+                {
+                    sb.Append(c);
+                }
+            }
+
+            if (sb.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            // Un segmento de namespace no puede empezar por un dígito.
+            if (char.IsDigit(sb[0]))
+            {
+                sb.Insert(0, '_');
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
         /// Converts a given string to PascalCase, removing invalid characters and ensuring it starts with a letter or underscore.
         /// </summary>
         /// <param name="value"></param>

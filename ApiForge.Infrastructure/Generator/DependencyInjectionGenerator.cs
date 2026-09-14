@@ -1,5 +1,6 @@
 ﻿using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Infrastructure.Generator.Planning;
+using ApiForge.Infrastructure.Helpers;
 using System.Text;
 
 namespace ApiForge.Infrastructure.Generator
@@ -12,25 +13,23 @@ namespace ApiForge.Infrastructure.Generator
         /// <summary>
         /// Generates the dependency injection extension method for registering API clients in the service collection, based on the provided solution plan.
         /// </summary>
-        /// <param name="plan"></param>
+        /// <param name="plan">The solution plan.</param>
         /// <returns>Returns the generated dependency injection file.</returns>
         public static GeneratedFile Generate(SolutionPlan plan)
         {
-            var interfacesNamespace = $"{plan.RootNamespace}.Application.Interfaces";
-            var clientsNamespace = $"{plan.RootNamespace}.Infrastructure.Clients";
-            var extensionMethodName = $"Add{plan.RootNamespace}Clients";
+            var ns = plan.Namespaces;
 
             var sb = new StringBuilder();
             sb.AppendLine("using System;");
             sb.AppendLine("using Microsoft.Extensions.DependencyInjection;");
-            sb.AppendLine($"using {interfacesNamespace};");
-            sb.AppendLine($"using {clientsNamespace};");
+            sb.AppendLine($"using {ns.ApplicationInterfacesNamespace};");
+            sb.AppendLine($"using {ns.InfrastructureClientsNamespace};");
             sb.AppendLine();
-            sb.AppendLine($"namespace {plan.RootNamespace}.Infrastructure.DependencyInjection");
+            sb.AppendLine($"namespace {ns.InfrastructureDependencyInjectionNamespace}");
             sb.AppendLine("{");
             sb.AppendLine("    public static class ServiceCollectionExtensions");
             sb.AppendLine("    {");
-            sb.AppendLine($"        public static IServiceCollection {extensionMethodName}(this IServiceCollection services, Uri baseAddress)");
+            sb.AppendLine($"        public static IServiceCollection {ns.ClientsExtensionMethodName}(this IServiceCollection services, Uri baseAddress)");
             sb.AppendLine("        {");
 
             foreach (var group in plan.Groups)
@@ -49,7 +48,8 @@ namespace ApiForge.Infrastructure.Generator
 
             return new GeneratedFile
             {
-                RelativePath = $"{plan.RootNamespace}.Infrastructure/DependencyInjection/ServiceCollectionExtensions.cs",
+                RelativePath = GeneratedFilePathHelper.BuildRelativePath(
+                    ns.InfrastructureNamespace, ns.InfrastructureDependencyInjectionNamespace, "ServiceCollectionExtensions.cs"),
                 Content = sb.ToString()
             };
         }

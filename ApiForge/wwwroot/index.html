@@ -312,7 +312,7 @@
 
       const blob = await res.blob();
       const disposition = res.headers.get('Content-Disposition') ?? '';
-      const match = disposition.match(/filename="?([^"]+)"?/);
+        const match = disposition.match(/(?:^|;\s*)filename="?([^";"]+)"?/i);
       const filename = match ? match[1] : 'GeneratedClient.zip';
 
       const url = URL.createObjectURL(blob);

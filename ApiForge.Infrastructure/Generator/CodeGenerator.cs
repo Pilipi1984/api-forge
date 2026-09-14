@@ -21,19 +21,18 @@ namespace ApiForge.Infrastructure.Generator
         {
             ArgumentNullException.ThrowIfNull(definition);
 
-            var rootNamespace = NameHelper.ToPascalCase(
-                string.IsNullOrWhiteSpace(definition.Title) ? "GeneratedApi" : definition.Title);
-
+            var rootNamespace = NameHelper.ToSolutionName(definition.Title);
             var plan = SolutionPlanner.CreatePlan(definition, rootNamespace);
+            var ns = plan.Namespaces;
 
             var files = new List<GeneratedFile>();
-            files.AddRange(ProjectFileGenerator.GenerateProjectFiles(rootNamespace));
-            files.Add(ProjectFileGenerator.GenerateSolutionFile(rootNamespace));
-            files.AddRange(DomainModelGenerator.Generate(definition, rootNamespace));
+            files.AddRange(ProjectFileGenerator.GenerateProjectFiles(ns));
+            files.Add(ProjectFileGenerator.GenerateSolutionFile(ns));
+            files.AddRange(DomainModelGenerator.Generate(definition, ns));
             files.AddRange(ApiContractGenerator.Generate(plan));
             files.AddRange(ApiClientImplementationGenerator.Generate(plan));
             files.Add(DependencyInjectionGenerator.Generate(plan));
-            files.Add(ProgramGenerator.Generate(plan, rootNamespace));
+            files.Add(ProgramGenerator.Generate(plan));
 
             var solution = new GeneratedSolution
             {

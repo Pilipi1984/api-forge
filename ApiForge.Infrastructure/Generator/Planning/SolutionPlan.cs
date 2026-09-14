@@ -37,6 +37,7 @@ namespace ApiForge.Infrastructure.Generator.Planning
     public sealed record SolutionPlan
     {
         public required string RootNamespace { get; init; }
+        public required ProjectNamespaces Namespaces { get; init; }
         public required IReadOnlyList<ClientGroupPlan> Groups { get; init; }
     }
 }

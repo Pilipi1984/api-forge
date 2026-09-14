@@ -19,9 +19,7 @@ namespace ApiForge.Infrastructure.Generator
         public static List<GeneratedFile> Generate(SolutionPlan plan)
         {
             var files = new List<GeneratedFile>();
-            var modelsNamespace = $"{plan.RootNamespace}.Domain.Models";
-            var interfacesNamespace = $"{plan.RootNamespace}.Application.Interfaces";
-            var clientsNamespace = $"{plan.RootNamespace}.Infrastructure.Clients";
+            var ns = plan.Namespaces;
 
             foreach (var group in plan.Groups)
             {
@@ -32,10 +30,10 @@ namespace ApiForge.Infrastructure.Generator
                 sb.AppendLine("using System.Net.Http.Json;");
                 sb.AppendLine("using System.Threading;");
                 sb.AppendLine("using System.Threading.Tasks;");
-                sb.AppendLine($"using {modelsNamespace};");
-                sb.AppendLine($"using {interfacesNamespace};");
+                sb.AppendLine($"using {ns.DomainModelsNamespace};");
+                sb.AppendLine($"using {ns.ApplicationInterfacesNamespace};");
                 sb.AppendLine();
-                sb.AppendLine($"namespace {clientsNamespace}");
+                sb.AppendLine($"namespace {ns.InfrastructureClientsNamespace}");
                 sb.AppendLine("{");
                 sb.AppendLine($"    public sealed class {group.ClassName} : {group.InterfaceName}");
                 sb.AppendLine("    {");
@@ -57,7 +55,8 @@ namespace ApiForge.Infrastructure.Generator
 
                 files.Add(new GeneratedFile
                 {
-                    RelativePath = $"{plan.RootNamespace}.Infrastructure/Clients/{group.ClassName}.cs",
+                    RelativePath = GeneratedFilePathHelper.BuildRelativePath(
+                        ns.InfrastructureNamespace, ns.InfrastructureClientsNamespace, $"{group.ClassName}.cs"),
                     Content = sb.ToString()
                 });
             }

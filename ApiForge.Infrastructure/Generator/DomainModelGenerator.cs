@@ -1,5 +1,6 @@
 ﻿using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Domain.Models;
+using ApiForge.Infrastructure.Generator.Planning;
 using ApiForge.Infrastructure.Generator.Resolvers;
 using ApiForge.Infrastructure.Helpers;
 using System.Text;
@@ -12,27 +13,24 @@ namespace ApiForge.Infrastructure.Generator
     public static class DomainModelGenerator
     {
         /// <summary>
-        /// Generates domain model classes based on the provided API definition.
+        /// Generates domain model classes based on the provided API definition and project namespaces.
         /// </summary>
-        /// <param name="definition"></param>
-        /// <param name="rootNamespace"></param>
+        /// <param name="definition">The API definition.</param>
+        /// <param name="ns">The project namespaces.</param>
         /// <returns>Returns a list of generated files.</returns>
-        public static List<GeneratedFile> Generate(ApiDefinition definition, string rootNamespace)
+        public static List<GeneratedFile> Generate(ApiDefinition definition, ProjectNamespaces ns)
         {
             var files = new List<GeneratedFile>();
-            var modelsRootNamespace = $"{rootNamespace}.Domain.Models";
 
             foreach (var model in definition.Models)
             {
-                var resolved = QualifiedNameResolver.Resolve(model.Name);
-                var className = resolved.ClassName;
-                var modelNamespace = QualifiedNameResolver.BuildNamespace(modelsRootNamespace, resolved.NamespaceSegments);
-                var folderSuffix = QualifiedNameResolver.BuildFolderPath(resolved.NamespaceSegments);
+                var name = model.Name.Contains(ns.DomainNamespace) ? model.Name.Substring(ns.DomainNamespace.Length + 2) : model.Name;
 
+                var className = NameHelper.ToPascalCase(name);
                 var usedNames = new HashSet<string>(StringComparer.Ordinal) { className };
 
                 var sb = new StringBuilder();
-                sb.AppendLine($"namespace {modelNamespace}");
+                sb.AppendLine($"namespace {ns.DomainModelsNamespace}");
                 sb.AppendLine("{");
                 sb.AppendLine($"    public class {className}");
                 sb.AppendLine("    {");
@@ -58,42 +56,35 @@ namespace ApiForge.Infrastructure.Generator
 
                 files.Add(new GeneratedFile
                 {
-                    RelativePath = $"{rootNamespace}.Domain/Models{folderSuffix}/{className}.cs",
+                    RelativePath = GeneratedFilePathHelper.BuildRelativePath(
+                        ns.DomainNamespace, ns.DomainModelsNamespace, $"{className}.cs"),
                     Content = sb.ToString()
                 });
             }
 
             return files;
         }
-
         /// <summary>
         /// Generates a unique property name by appending a number if the candidate name is already used.
         /// </summary>
-        /// <param name="candidate"></param>
-        /// <param name="used"></param>
-        /// <returns>Returns a unique property name.</returns>
+        /// <param name="candidate">The candidate property name.</param>
+        /// <param name="used">The set of already used property names.</param>
+        /// <returns>The unique property name.</returns>
         private static string MakeUniquePropertyName(string candidate, HashSet<string> used)
         {
             var name = candidate;
             var i = 1;
             while (!used.Add(name))
+            {
                 name = candidate + i++;
+            }
+
             return name;
         }
 
-        /// <summary>
-        /// Returns a default assignment string for a given type. For string types, it returns " = string.Empty;", otherwise it returns an empty string.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns>Returns a default assignment string.</returns>
         private static string GetDefaultAssignment(string type) =>
             type == "string" ? " = string.Empty;" : string.Empty;
 
-        /// <summary>
-        /// Escapes special characters in XML comments to ensure they are valid XML. Specifically, it replaces &, <, and > with their corresponding XML entities.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns>Returns the escaped XML comment.</returns>
         private static string EscapeXmlComment(string value) =>
             value.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
     }

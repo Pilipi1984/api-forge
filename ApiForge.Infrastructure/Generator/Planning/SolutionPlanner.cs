@@ -5,11 +5,21 @@ using ApiForge.Infrastructure.Helpers;
 
 namespace ApiForge.Infrastructure.Generator.Planning
 {
+    /// <summary>
+    /// Generates a plan for creating a C# solution based on the provided API definition, 
+    /// organizing endpoints into client groups and resolving method names, parameter types, and namespaces.
+    /// </summary>
     public static class SolutionPlanner
     {
+        /// <summary>
+        /// Creates a solution plan based on the provided API definition and root namespace.
+        /// </summary>
+        /// <param name="definition"></param>
+        /// <param name="rootNamespace"></param>
+        /// <returns>The generated solution plan.</returns>
         public static SolutionPlan CreatePlan(ApiDefinition definition, string rootNamespace)
         {
-            var modelsNamespace = $"{rootNamespace}.Domain.Models";
+            var namespaces = ProjectNamespaces.From(rootNamespace);
             var groups = new List<ClientGroupPlan>();
 
             foreach (var group in definition.Endpoints.GroupBy(ResolveGroupName))
@@ -20,7 +30,7 @@ namespace ApiForge.Infrastructure.Generator.Planning
                 foreach (var endpoint in group)
                 {
                     var methodName = ResolveMethodName(endpoint, usedMethodNames);
-                    var returnType = CSharpTypeResolver.Resolve(endpoint.Response, modelsNamespace);
+                    var returnType = CSharpTypeResolver.Resolve(endpoint.Response, namespaces.DomainModelsNamespace);
 
                     var usedParamNames = new HashSet<string>(StringComparer.Ordinal) { "cancellationToken" };
 
@@ -32,7 +42,7 @@ namespace ApiForge.Infrastructure.Generator.Planning
                     string? requestBodyParamName = null;
                     if (endpoint.RequestBody is not null)
                     {
-                        requestBodyType = CSharpTypeResolver.Resolve(endpoint.RequestBody, modelsNamespace);
+                        requestBodyType = CSharpTypeResolver.Resolve(endpoint.RequestBody, namespaces.DomainModelsNamespace);
                         requestBodyParamName = MakeUnique("request", usedParamNames);
                     }
 
@@ -61,9 +71,15 @@ namespace ApiForge.Infrastructure.Generator.Planning
                 });
             }
 
-            return new SolutionPlan { RootNamespace = rootNamespace, Groups = groups };
+            return new SolutionPlan { RootNamespace = rootNamespace, Namespaces = namespaces, Groups = groups };
         }
 
+        /// <summary>
+        /// Builds a list of parameter plans from the provided API parameters, ensuring unique names and resolving C# types.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="usedNames"></param>
+        /// <returns>The list of generated parameter plans.</returns>
         private static List<ParameterPlan> BuildParameterPlans(IEnumerable<ApiParameter> parameters, HashSet<string> usedNames)
         {
             var result = new List<ParameterPlan>();
@@ -79,6 +95,12 @@ namespace ApiForge.Infrastructure.Generator.Planning
             return result;
         }
 
+        /// <summary>
+        /// Ensures that the provided candidate name is unique within the given set of used names.
+        /// </summary>
+        /// <param name="candidate"></param>
+        /// <param name="used"></param>
+        /// <returns>The unique name.</returns>
         private static string MakeUnique(string candidate, HashSet<string> used)
         {
             var name = candidate;
@@ -88,6 +110,12 @@ namespace ApiForge.Infrastructure.Generator.Planning
             return name;
         }
 
+        /// <summary>
+        /// Resolves the group name for the provided API endpoint based on its route. 
+        /// The first non-parameter segment of the route is used as the group name. If no such segment exists, "Root" is returned.
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <returns>The resolved group name.</returns>
         private static string ResolveGroupName(ApiEndpoint endpoint)
         {
             var firstSegment = endpoint.Route
@@ -97,6 +125,13 @@ namespace ApiForge.Infrastructure.Generator.Planning
             return firstSegment ?? "Root";
         }
 
+        /// <summary>
+        /// Resolves a unique method name for the provided API endpoint. If the endpoint has an OperationId, it is used as the base name; 
+        /// otherwise, the HTTP method and route are combined to form the base name. The method ensures that the final name is unique within the provided set of used names.
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <param name="used"></param>
+        /// <returns>The resolved method name.</returns>
         private static string ResolveMethodName(ApiEndpoint endpoint, HashSet<string> used)
         {
             string baseName;

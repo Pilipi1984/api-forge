@@ -14,22 +14,21 @@ namespace ApiForge.Infrastructure.Generator
         /// <summary>
         /// Generates C# interface files for API contracts based on the provided solution plan.
         /// </summary>
-        /// <param name="plan"></param>
+        /// <param name="plan">The solution plan.</param>
         /// <returns>Returns a list of generated files.</returns>
         public static List<GeneratedFile> Generate(SolutionPlan plan)
         {
             var files = new List<GeneratedFile>();
-            var modelsNamespace = $"{plan.RootNamespace}.Domain.Models";
-            var interfacesNamespace = $"{plan.RootNamespace}.Application.Interfaces";
+            var ns = plan.Namespaces;
 
             foreach (var group in plan.Groups)
             {
                 var sb = new StringBuilder();
                 sb.AppendLine("using System.Threading;");
                 sb.AppendLine("using System.Threading.Tasks;");
-                sb.AppendLine($"using {modelsNamespace};");
+                sb.AppendLine($"using {ns.DomainModelsNamespace};");
                 sb.AppendLine();
-                sb.AppendLine($"namespace {interfacesNamespace}");
+                sb.AppendLine($"namespace {ns.ApplicationInterfacesNamespace}");
                 sb.AppendLine("{");
                 sb.AppendLine($"    public interface {group.InterfaceName}");
                 sb.AppendLine("    {");
@@ -53,7 +52,8 @@ namespace ApiForge.Infrastructure.Generator
 
                 files.Add(new GeneratedFile
                 {
-                    RelativePath = $"{plan.RootNamespace}.Application/Interfaces/{group.InterfaceName}.cs",
+                    RelativePath = GeneratedFilePathHelper.BuildRelativePath(
+                        ns.ApplicationNamespace, ns.ApplicationInterfacesNamespace, $"{group.InterfaceName}.cs"),
                     Content = sb.ToString()
                 });
             }

@@ -1,4 +1,5 @@
 ﻿using ApiForge.Domain.GeneratedApiSolution;
+using ApiForge.Infrastructure.Generator.Planning;
 using System.Text;
 
 namespace ApiForge.Infrastructure.Generator
@@ -17,60 +18,53 @@ namespace ApiForge.Infrastructure.Generator
         /// </summary>
         /// <param name="rootNamespace"></param>
         /// <returns>Returns the list of generated project files.</returns>
-        public static List<GeneratedFile> GenerateProjectFiles(string rootNamespace)
+        public static List<GeneratedFile> GenerateProjectFiles(ProjectNamespaces ns)
         {
-            var files = new List<GeneratedFile>
+            return new List<GeneratedFile>
+        {
+            new()
             {
-                new()
-                {
-                    RelativePath = $"{rootNamespace}.Domain/{rootNamespace}.Domain.csproj",
-                    Content = BuildCsproj(TargetFramework)
-                },
-                new()
-                {
-                    RelativePath = $"{rootNamespace}.Application/{rootNamespace}.Application.csproj",
-                    Content = BuildCsproj(TargetFramework,
-                        projectReferences: new[] { $@"..\{rootNamespace}.Domain\{rootNamespace}.Domain.csproj" })
-                },
-                new()
-                {
-                    RelativePath = $"{rootNamespace}.Infrastructure/{rootNamespace}.Infrastructure.csproj",
-                    Content = BuildCsproj(TargetFramework,
-                        projectReferences: new[]
-                        {
-                            $@"..\{rootNamespace}.Domain\{rootNamespace}.Domain.csproj",
-                            $@"..\{rootNamespace}.Application\{rootNamespace}.Application.csproj"
-                        },
-                        packageReferences: new[]
-                        {
-                            ("Microsoft.Extensions.Http", "9.0.0"),
-                            ("System.Net.Http.Json", "9.0.0")
-                        })
-                },
-                new()
-                {
-                    RelativePath = $"{rootNamespace}.Client/{rootNamespace}.Client.csproj",
-                    Content = BuildCsproj("net10.0",
-                        projectReferences: new[]
-                        {
-                            $@"..\{rootNamespace}.Domain\{rootNamespace}.Domain.csproj",
-                            $@"..\{rootNamespace}.Application\{rootNamespace}.Application.csproj",
-                            $@"..\{rootNamespace}.Infrastructure\{rootNamespace}.Infrastructure.csproj"
-                        },
-                        packageReferences: new[] { ("Microsoft.Extensions.DependencyInjection", "9.0.0") },
-                        outputType: "Exe")
-                }
-            };
-
-            return files;
+                RelativePath = $"{ns.DomainNamespace}/{ns.DomainNamespace}.csproj",
+                Content = BuildCsproj(TargetFramework, ns.DomainNamespace)
+            },
+            new()
+            {
+                RelativePath = $"{ns.ApplicationNamespace}/{ns.ApplicationNamespace}.csproj",
+                Content = BuildCsproj(TargetFramework, ns.ApplicationNamespace,
+                    projectReferences: [$@"..\{ns.DomainNamespace}\{ns.DomainNamespace}.csproj"])
+            },
+            new()
+            {
+                RelativePath = $"{ns.InfrastructureNamespace}/{ns.InfrastructureNamespace}.csproj",
+                Content = BuildCsproj(TargetFramework, ns.InfrastructureNamespace,
+                    projectReferences:
+                    [
+                        $@"..\{ns.DomainNamespace}\{ns.DomainNamespace}.csproj",
+                        $@"..\{ns.ApplicationNamespace}\{ns.ApplicationNamespace}.csproj"
+                    ],
+                    packageReferences:
+                    [
+                        ("Microsoft.Extensions.Http", "9.0.0"),
+                        ("System.Net.Http.Json", "9.0.0")
+                    ])
+            },
+            new()
+            {
+                RelativePath = $"{ns.ClientNamespace}/{ns.ClientNamespace}.csproj",
+                Content = BuildCsproj(TargetFramework, ns.ClientNamespace,
+                    projectReferences:
+                    [
+                        $@"..\{ns.DomainNamespace}\{ns.DomainNamespace}.csproj",
+                        $@"..\{ns.ApplicationNamespace}\{ns.ApplicationNamespace}.csproj",
+                        $@"..\{ns.InfrastructureNamespace}\{ns.InfrastructureNamespace}.csproj"
+                    ],
+                    packageReferences: [("Microsoft.Extensions.DependencyInjection", "9.0.0")],
+                    outputType: "Exe")
+            }
+        };
         }
 
-        /// <summary>
-        /// Generates a .sln solution file that includes the Domain, Application, Infrastructure, and Client projects based on the provided root namespace.
-        /// </summary>
-        /// <param name="rootNamespace"></param>
-        /// <returns>Returns the generated solution file.</returns>
-        public static GeneratedFile GenerateSolutionFile(string rootNamespace)
+        public static GeneratedFile GenerateSolutionFile(ProjectNamespaces ns)
         {
             var domainGuid = Guid.NewGuid().ToString("B").ToUpperInvariant();
             var applicationGuid = Guid.NewGuid().ToString("B").ToUpperInvariant();
@@ -81,13 +75,13 @@ namespace ApiForge.Infrastructure.Generator
             var sb = new StringBuilder();
             sb.AppendLine();
             sb.AppendLine("Microsoft Visual Studio Solution File, Format Version 12.00");
-            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{rootNamespace}.Domain\", \"{rootNamespace}.Domain\\{rootNamespace}.Domain.csproj\", \"{domainGuid}\"");
+            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.DomainNamespace}\", \"{ns.DomainNamespace}\\{ns.DomainNamespace}.csproj\", \"{domainGuid}\"");
             sb.AppendLine(EndProject);
-            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{rootNamespace}.Application\", \"{rootNamespace}.Application\\{rootNamespace}.Application.csproj\", \"{applicationGuid}\"");
+            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.ApplicationNamespace}\", \"{ns.ApplicationNamespace}\\{ns.ApplicationNamespace}.csproj\", \"{applicationGuid}\"");
             sb.AppendLine(EndProject);
-            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{rootNamespace}.Infrastructure\", \"{rootNamespace}.Infrastructure\\{rootNamespace}.Infrastructure.csproj\", \"{infrastructureGuid}\"");
+            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.InfrastructureNamespace}\", \"{ns.InfrastructureNamespace}\\{ns.InfrastructureNamespace}.csproj\", \"{infrastructureGuid}\"");
             sb.AppendLine(EndProject);
-            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{rootNamespace}.Client\", \"{rootNamespace}.Client\\{rootNamespace}.Client.csproj\", \"{clientGuid}\"");
+            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.ClientNamespace}\", \"{ns.ClientNamespace}\\{ns.ClientNamespace}.csproj\", \"{clientGuid}\"");
             sb.AppendLine(EndProject);
             sb.AppendLine("Global");
             sb.AppendLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");
@@ -102,25 +96,19 @@ namespace ApiForge.Infrastructure.Generator
                 sb.AppendLine($"\t\t{guid}.Release|Any CPU.ActiveCfg = Release|Any CPU");
                 sb.AppendLine($"\t\t{guid}.Release|Any CPU.Build.0 = Release|Any CPU");
             }
+
             sb.AppendLine("\tEndGlobalSection");
             sb.AppendLine("\tGlobalSection(SolutionProperties) = preSolution");
             sb.AppendLine("\t\tHideSolutionNode = FALSE");
             sb.AppendLine("\tEndGlobalSection");
             sb.AppendLine("EndGlobal");
 
-            return new GeneratedFile { RelativePath = $"{rootNamespace}.sln", Content = sb.ToString() };
+            return new GeneratedFile { RelativePath = $"{ns.RootNamespace}.sln", Content = sb.ToString() };
         }
 
-        /// <summary>
-        /// Builds the content of a .csproj file based on the provided target framework, project references, package references, and output type.
-        /// </summary>
-        /// <param name="targetFramework"></param>
-        /// <param name="projectReferences"></param>
-        /// <param name="packageReferences"></param>
-        /// <param name="outputType"></param>
-        /// <returns>Returns the generated .csproj content.</returns>
         private static string BuildCsproj(
             string targetFramework,
+            string rootNamespace,
             IEnumerable<string>? projectReferences = null,
             IEnumerable<(string Package, string Version)>? packageReferences = null,
             string? outputType = null)
@@ -132,8 +120,12 @@ namespace ApiForge.Infrastructure.Generator
             sb.AppendLine($"    <TargetFramework>{targetFramework}</TargetFramework>");
             sb.AppendLine("    <ImplicitUsings>enable</ImplicitUsings>");
             sb.AppendLine("    <Nullable>enable</Nullable>");
+            sb.AppendLine($"    <RootNamespace>{rootNamespace}</RootNamespace>");
             if (outputType is not null)
+            {
                 sb.AppendLine($"    <OutputType>{outputType}</OutputType>");
+            }
+
             sb.AppendLine("  </PropertyGroup>");
 
             if (packageReferences is not null && packageReferences.Any())
@@ -141,7 +133,10 @@ namespace ApiForge.Infrastructure.Generator
                 sb.AppendLine();
                 sb.AppendLine("  <ItemGroup>");
                 foreach (var (package, version) in packageReferences)
+                {
                     sb.AppendLine($"    <PackageReference Include=\"{package}\" Version=\"{version}\" />");
+                }
+
                 sb.AppendLine("  </ItemGroup>");
             }
 
@@ -150,7 +145,10 @@ namespace ApiForge.Infrastructure.Generator
                 sb.AppendLine();
                 sb.AppendLine("  <ItemGroup>");
                 foreach (var reference in projectReferences)
+                {
                     sb.AppendLine($"    <ProjectReference Include=\"{reference}\" />");
+                }
+
                 sb.AppendLine("  </ItemGroup>");
             }
 
