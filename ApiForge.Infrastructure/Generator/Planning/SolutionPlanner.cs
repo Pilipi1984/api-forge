@@ -71,7 +71,13 @@ namespace ApiForge.Infrastructure.Generator.Planning
                 });
             }
 
-            return new SolutionPlan { RootNamespace = rootNamespace, Namespaces = namespaces, Groups = groups };
+            return new SolutionPlan
+            {
+                RootNamespace = rootNamespace,
+                Style = style,
+                Conventions = conventions,
+                Groups = groups
+            };
         }
 
         /// <summary>
