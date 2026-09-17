@@ -6,8 +6,12 @@ using ApiForge.Infrastructure.Helpers;
 namespace ApiForge.Infrastructure.Generator.Planning
 {
     /// <summary>
-    /// Generates a plan for creating a C# solution based on the provided API definition, 
-    /// organizing endpoints into client groups and resolving method names, parameter types, and namespaces.
+    /// Generates a plan for creating a C# solution based on the provided API definition,
+    /// organizing endpoints into client groups and resolving method names, parameter types,
+    /// and namespaces. The architecture style (Clean Architecture vs Hexagonal) comes from
+    /// <see cref="ApiDefinition.Architecture"/> — set by <c>OpenApiParser</c> from the parsed
+    /// spec (explicit <c>x-architecture</c> extension, or a tag-name heuristic as fallback) —
+    /// and drives naming/namespacing through <see cref="ArchitectureConventions"/>.
     /// </summary>
     public static class SolutionPlanner
     {
@@ -19,7 +23,9 @@ namespace ApiForge.Infrastructure.Generator.Planning
         /// <returns>The generated solution plan.</returns>
         public static SolutionPlan CreatePlan(ApiDefinition definition, string rootNamespace)
         {
-            var namespaces = ProjectNamespaces.From(rootNamespace);
+            var style = definition.Architecture;
+            var conventions = ArchitectureConventions.For(style);
+            var namespaces = ProjectNamespaces.From(rootNamespace, conventions);
             var groups = new List<ClientGroupPlan>();
 
             foreach (var group in definition.Endpoints.GroupBy(ResolveGroupName))
@@ -65,8 +71,8 @@ namespace ApiForge.Infrastructure.Generator.Planning
                 groups.Add(new ClientGroupPlan
                 {
                     GroupName = pascalGroup,
-                    InterfaceName = $"I{pascalGroup}Client",
-                    ClassName = $"{pascalGroup}Client",
+                    InterfaceName = conventions.InterfaceName(pascalGroup),
+                    ClassName = conventions.ClassName(pascalGroup),
                     Endpoints = endpointPlans
                 });
             }
@@ -76,6 +82,7 @@ namespace ApiForge.Infrastructure.Generator.Planning
                 RootNamespace = rootNamespace,
                 Style = style,
                 Conventions = conventions,
+                Namespaces = namespaces,
                 Groups = groups
             };
         }
@@ -117,7 +124,7 @@ namespace ApiForge.Infrastructure.Generator.Planning
         }
 
         /// <summary>
-        /// Resolves the group name for the provided API endpoint based on its route. 
+        /// Resolves the group name for the provided API endpoint based on its route.
         /// The first non-parameter segment of the route is used as the group name. If no such segment exists, "Root" is returned.
         /// </summary>
         /// <param name="endpoint"></param>
@@ -132,7 +139,7 @@ namespace ApiForge.Infrastructure.Generator.Planning
         }
 
         /// <summary>
-        /// Resolves a unique method name for the provided API endpoint. If the endpoint has an OperationId, it is used as the base name; 
+        /// Resolves a unique method name for the provided API endpoint. If the endpoint has an OperationId, it is used as the base name;
         /// otherwise, the HTTP method and route are combined to form the base name. The method ensures that the final name is unique within the provided set of used names.
         /// </summary>
         /// <param name="endpoint"></param>

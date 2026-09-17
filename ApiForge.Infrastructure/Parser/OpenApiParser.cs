@@ -1,4 +1,5 @@
 ﻿using ApiForge.Application.Interfaces;
+using ApiForge.Domain.Enums;
 using ApiForge.Domain.Models;
 using ApiForge.Domain.Models.ApiParameters;
 using ApiForge.Domain.Models.Schema;
@@ -15,6 +16,14 @@ namespace ApiForge.Infrastructure.Parser
     {
         private const string Object = "object";
         private const string StringTypename = "string";
+        private const string ArchitectureExtensionKey = "x-architecture";
+
+        /// <summary>
+        /// Tag-name substrings that, in the absence of an explicit "x-architecture" extension,
+        /// weakly suggest a Hexagonal (Ports &amp; Adapters) style spec. This is a best-effort
+        /// fallback only — it never overrides an explicit "x-architecture" value.
+        /// </summary>
+        private static readonly string[] HexagonalTagHints = { "port", "adapter", "driven", "driving" };
 
         /// <summary>
         /// Parses an OpenAPI document from a stream and maps it to an ApiDefinition.
@@ -56,6 +65,7 @@ namespace ApiForge.Infrastructure.Parser
             {
                 Title = doc.Info?.Title ?? string.Empty,
                 Version = doc.Info?.Version ?? string.Empty,
+                Architecture = DetectArchitecture(doc)
             };
 
             // 1. Reusable models (components/schemas)
@@ -85,6 +95,59 @@ namespace ApiForge.Infrastructure.Parser
             }
 
             return definition;
+        }
+
+        /// <summary>
+        /// Detects the intended architecture style for the generated solution.
+        /// Priority:
+        /// 1. An explicit "x-architecture" vendor extension on the document root or on "info"
+        ///    (accepted values: "hexagonal" / "ports-and-adapters" for Hexagonal,
+        ///    "clean" / "clean-architecture" for Clean Architecture).
+        /// 2. A weak fallback heuristic over tag names, only used when no explicit value is present.
+        /// 3. Clean Architecture, as the safe default.
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <returns>Returns the detected architecture style.</returns>
+        private static ArchitectureStyle DetectArchitecture(OpenApiDocument doc)
+        {
+            var explicitValue = GetExtensionStringValue(doc.Extensions, ArchitectureExtensionKey)
+                ?? GetExtensionStringValue(doc.Info?.Extensions, ArchitectureExtensionKey);
+
+            if (ArchitectureStyleParser.TryParse(explicitValue, out var explicitStyle))
+            {
+                return explicitStyle;
+            }
+
+            var tagNames = doc.Tags?.Select(t => t.Name ?? string.Empty) ?? Enumerable.Empty<string>();
+            var looksHexagonal = tagNames.Any(tag =>
+                HexagonalTagHints.Any(hint => tag.Contains(hint, StringComparison.OrdinalIgnoreCase)));
+
+            return looksHexagonal ? ArchitectureStyle.Hexagonal : ArchitectureStyle.CleanArchitecture;
+        }
+
+        /// <summary>
+        /// Reads a vendor extension value as plain text, if present. Handles the JSON-backed
+        /// extension representation used by Microsoft.OpenApi 3.x (System.Text.Json-based nodes).
+        /// </summary>
+        /// <param name="extensions"></param>
+        /// <param name="key"></param>
+        /// <returns>Returns the extension's raw string value, or null if not present.</returns>
+        private static string? GetExtensionStringValue(IDictionary<string, IOpenApiExtension>? extensions, string key)
+        {
+            if (extensions is null || !extensions.TryGetValue(key, out var extension) || extension is null)
+            {
+                return null;
+            }
+
+            // Microsoft.OpenApi 3.x represents JSON-backed extensions as JsonNodeExtension,
+            // exposing the raw value through its Node property. Fall back to ToString() for
+            // any other IOpenApiExtension implementation.
+            if (extension is JsonNodeExtension jsonExtension)
+            {
+                return jsonExtension.Node?.ToString().Trim('"');
+            }
+
+            return extension.ToString()?.Trim('"');
         }
 
         /// <summary>
