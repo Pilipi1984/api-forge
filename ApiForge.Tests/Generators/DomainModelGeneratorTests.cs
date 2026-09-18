@@ -22,7 +22,7 @@ namespace ApiForge.Tests.Generators
                 }
             };
 
-            var conventions = ApiForge.Infrastructure.Generator.Planning.ArchitectureConventions.For(ApiForge.Domain.Enums.ArchitectureStyle.CleanArchitecture);
+            var conventions = ApiForge.Infrastructure.Generator.Planning.ArchitectureConventions.For(ApiForge.Domain.Enums.ArchitectureStyle.Clean);
             var ns = ApiForge.Infrastructure.Generator.Planning.ProjectNamespaces.From("Root", conventions);
 
             var files = DomainModelGenerator.Generate(definition, ns);

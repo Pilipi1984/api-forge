@@ -16,7 +16,7 @@ namespace ApiForge.Infrastructure.Helpers
         /// "clean" / "clean-architecture" for Clean Architecture.
         /// </summary>
         /// <param name="value"></param>
-        /// <param name="style">The parsed style, or <see cref="ArchitectureStyle.CleanArchitecture"/> if parsing failed.</param>
+        /// <param name="style">The parsed style, or <see cref="ArchitectureStyle.Clean"/> if parsing failed.</param>
         /// <returns>True if the value matched a known architecture style; otherwise false.</returns>
         public static bool TryParse(string? value, out ArchitectureStyle style)
         {
@@ -34,12 +34,12 @@ namespace ApiForge.Infrastructure.Helpers
                 if (string.Equals(trimmed, "clean", StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(trimmed, "clean-architecture", StringComparison.OrdinalIgnoreCase))
                 {
-                    style = ArchitectureStyle.CleanArchitecture;
+                    style = ArchitectureStyle.Clean;
                     return true;
                 }
             }
 
-            style = ArchitectureStyle.CleanArchitecture;
+            style = ArchitectureStyle.Clean;
             return false;
         }
     }

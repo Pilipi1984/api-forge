@@ -3,10 +3,19 @@ using ApiForge.Domain.Models.Schema;
 
 namespace ApiForge.Domain.Models
 {
+    /// <summary>
+    /// API endpoint
+    /// </summary>
     public class ApiEndpoint
     {
+        /// <summary>
+        /// Route
+        /// </summary>
         public string Route { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Type of httpMethod
+        /// </summary>
         public string HttpMethod { get; set; } = string.Empty;
 
         public string OperationId { get; set; } = string.Empty;

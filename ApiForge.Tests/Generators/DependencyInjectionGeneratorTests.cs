@@ -11,7 +11,7 @@ namespace ApiForge.Tests.Generators
         [Test]
         public void Generate_IncludesHttpClientRegistrations_AndExtensionName()
         {
-            var conventions = ArchitectureConventions.For(ApiForge.Domain.Enums.ArchitectureStyle.CleanArchitecture);
+            var conventions = ArchitectureConventions.For(ApiForge.Domain.Enums.ArchitectureStyle.Clean);
             var ns = ProjectNamespaces.From("Acme.Root", conventions);
 
             var group = new ClientGroupPlan
@@ -25,7 +25,7 @@ namespace ApiForge.Tests.Generators
             var plan = new SolutionPlan
             {
                 RootNamespace = "Acme.Root",
-                Style = ApiForge.Domain.Enums.ArchitectureStyle.CleanArchitecture,
+                Style = ApiForge.Domain.Enums.ArchitectureStyle.Clean,
                 Conventions = conventions,
                 Namespaces = ns,
                 Groups = new List<ClientGroupPlan> { group }

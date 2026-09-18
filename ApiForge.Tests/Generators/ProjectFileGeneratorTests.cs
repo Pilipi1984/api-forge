@@ -6,7 +6,7 @@ namespace ApiForge.Tests.Generators
     {
         private static readonly object[] RootsAndStyles =
         {
-            new object[] { "TestRoot", ApiForge.Domain.Enums.ArchitectureStyle.CleanArchitecture },
+            new object[] { "TestRoot", ApiForge.Domain.Enums.ArchitectureStyle.Clean },
             new object[] { "Acme.App", ApiForge.Domain.Enums.ArchitectureStyle.Hexagonal }
         };
 

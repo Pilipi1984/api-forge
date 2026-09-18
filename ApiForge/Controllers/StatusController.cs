@@ -1,4 +1,5 @@
 ﻿using ApiForge.ApplicationCore.DTOs.Responses;
+using ApiForge.ApplicationCore.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiForge.Api.Controllers
@@ -22,7 +23,7 @@ namespace ApiForge.Api.Controllers
         {
             var response = new StatusResponse
             {
-                Status = "OK",
+                Status = ApiStatus.OK,
                 Version = typeof(StatusController).Assembly.GetName().Version?.ToString() ?? "unknown",
                 Environment = HttpContext.RequestServices
                     .GetRequiredService<IWebHostEnvironment>().EnvironmentName,

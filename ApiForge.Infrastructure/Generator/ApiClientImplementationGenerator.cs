@@ -69,51 +69,61 @@ namespace ApiForge.Infrastructure.Generator
         /// </summary>
         /// <param name="sb"></param>
         /// <param name="endpoint"></param>
-        private static void AppendMethod(StringBuilder sb, Planning.EndpointPlan endpoint)
+        private static void AppendMethod(StringBuilder sb, EndpointPlan endpoint)
         {
+            ArgumentNullException.ThrowIfNull(endpoint);
             var signatureParams = EndpointSignatureHelper.BuildParameterList(endpoint);
-            sb.AppendLine($"        public async Task<{endpoint.ReturnType}> {endpoint.MethodName}Async({signatureParams}CancellationToken cancellationToken = default)");
-            sb.AppendLine("        {");
-            sb.AppendLine($"            var path = {BuildPathExpression(endpoint)};");
+            sb.AppendLine($"\t\tpublic async Task<{endpoint.ReturnType}> {endpoint.MethodName}Async({signatureParams}CancellationToken cancellationToken = default)");
+            sb.AppendLine("\t\t{");
+            sb.AppendLine($"\t\t\tvar path = {BuildPathExpression(endpoint)};");
 
             if (endpoint.QueryParameters.Count > 0)
             {
-                sb.AppendLine("            var queryParameters = new List<string>();");
+                sb.AppendLine("\t\t\tvar queryParameters = new List<string>();");
                 foreach (var query in endpoint.QueryParameters)
                 {
-                    sb.AppendLine($"            if ({query.Name} is not null)");
-                    sb.AppendLine($"                queryParameters.Add($\"{query.Source.Name}={{Uri.EscapeDataString({query.Name}.ToString() ?? string.Empty)}}\");");
+                    sb.AppendLine($"\t\t\tif ({query.Name} is not null)");
+                    sb.AppendLine("\t\t\t{");
+                    sb.AppendLine($"\t\t\t\tqueryParameters.Add($\"{query.Source.Name}={{Uri.EscapeDataString({query.Name}.ToString() ?? string.Empty)}}\");");
+                    sb.AppendLine("\t\t\t}");
+                    sb.AppendLine();
                 }
-                sb.AppendLine("            if (queryParameters.Count > 0)");
-                sb.AppendLine("                path += \"?\" + string.Join(\"&\", queryParameters);");
+                sb.AppendLine("\t\t\tif (queryParameters.Count > 0)");
+                sb.AppendLine("\t\t\t{");
+                sb.AppendLine("\t\t\t\tpath += \"?\" + string.Join(\"&\", queryParameters);");
+                sb.AppendLine("\t\t\t}");
+                sb.AppendLine();
             }
 
-            sb.AppendLine($"            using var httpRequest = new HttpRequestMessage({ToHttpMethodExpression(endpoint.HttpMethod)}, path);");
+            sb.AppendLine($"\t\t\tusing var httpRequest = new HttpRequestMessage({ToHttpMethodExpression(endpoint.HttpMethod)}, path);");
 
             foreach (var header in endpoint.HeaderParameters)
             {
-                sb.AppendLine($"            if ({header.Name} is not null)");
-                sb.AppendLine($"                httpRequest.Headers.TryAddWithoutValidation(\"{header.Source.Name}\", {header.Name}.ToString());");
+                sb.AppendLine($"\t\t\tif ({header.Name} is not null)");
+                sb.AppendLine("\t\t\t{");
+                sb.AppendLine($"\t\t\t\thttpRequest.Headers.TryAddWithoutValidation(\"{header.Source.Name}\", {header.Name}.ToString());");
+                sb.AppendLine("\t\t\t}");
+                sb.AppendLine();
             }
 
             if (endpoint.RequestBodyType is not null)
-                sb.AppendLine($"            httpRequest.Content = JsonContent.Create({endpoint.RequestBodyParameterName});");
+            {
+                sb.AppendLine($"\t\t\thttpRequest.Content = JsonContent.Create({endpoint.RequestBodyParameterName});");
+            }
 
-            sb.AppendLine("            using var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);");
-            sb.AppendLine("            response.EnsureSuccessStatusCode();");
+            sb.AppendLine("\t\t\tusing var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);");
+            sb.AppendLine("\t\t\tresponse.EnsureSuccessStatusCode();");
             sb.AppendLine();
 
-            if (endpoint.ReturnType == "object")
+            if (!endpoint.ReturnType.Equals("object", StringComparison.InvariantCultureIgnoreCase))
             {
-                sb.AppendLine("            return default!;");
-            }
-            else
-            {
-                sb.AppendLine($"            var result = await response.Content.ReadFromJsonAsync<{endpoint.ReturnType}>(cancellationToken: cancellationToken).ConfigureAwait(false);");
-                sb.AppendLine("            return result!;");
+                sb.AppendLine($"\t\t\tvar result = await response.Content.ReadFromJsonAsync<{endpoint.ReturnType}>(cancellationToken: cancellationToken).ConfigureAwait(false);");
+                sb.AppendLine();
             }
 
-            sb.AppendLine("        }");
+            sb.AppendLine("\t\t\treturn result!;");
+
+            sb.AppendLine("\t\t}");
         }
 
         /// <summary>
@@ -122,11 +132,13 @@ namespace ApiForge.Infrastructure.Generator
         /// </summary>
         /// <param name="endpoint"></param>
         /// <returns>Returns the generated path expression.</returns>
-        private static string BuildPathExpression(Planning.EndpointPlan endpoint)
+        private static string BuildPathExpression(EndpointPlan endpoint)
         {
             var template = endpoint.Route.TrimStart('/');
             foreach (var pathParam in endpoint.PathParameters)
+            {
                 template = template.Replace("{" + pathParam.Source.Name + "}", "{" + pathParam.Name + "}", StringComparison.Ordinal);
+            }
 
             return $"$\"{template}\"";
         }

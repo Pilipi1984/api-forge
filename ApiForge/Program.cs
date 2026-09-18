@@ -1,12 +1,14 @@
 using ApiForge.Application.Interfaces;
+using ApiForge.Infrastructure.Generator;
+using ApiForge.Infrastructure.Parser;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddScoped<IOpenApiParser, ApiForge.Infrastructure.Parser.OpenApiParser>();
-builder.Services.AddScoped<ICodeGenerator, ApiForge.Infrastructure.Generator.CodeGenerator>();
+builder.Services.AddScoped<IOpenApiParser, OpenApiParser>();
+builder.Services.AddScoped<ICodeGenerator, CodeGenerator>();
 
 var app = builder.Build();
 

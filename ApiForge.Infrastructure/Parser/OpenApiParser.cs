@@ -122,7 +122,7 @@ namespace ApiForge.Infrastructure.Parser
             var looksHexagonal = tagNames.Any(tag =>
                 HexagonalTagHints.Any(hint => tag.Contains(hint, StringComparison.OrdinalIgnoreCase)));
 
-            return looksHexagonal ? ArchitectureStyle.Hexagonal : ArchitectureStyle.CleanArchitecture;
+            return looksHexagonal ? ArchitectureStyle.Hexagonal : ArchitectureStyle.Clean;
         }
 
         /// <summary>
