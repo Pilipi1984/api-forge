@@ -1,5 +1,6 @@
 ﻿using ApiForge.Application.Interfaces;
 using ApiForge.Infrastructure.Helpers;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
@@ -7,7 +8,8 @@ using System.IO.Compression;
 namespace ApiForge.Api.Controllers
 {
     [ApiController]
-    [Route("convert")]
+    [ApiVersion("1.0")]
+    [Route("v{version:apiVersion}/convert")]
     public class ConvertFileToSolutionController : ControllerBase
     {
         private readonly IOpenApiParser _parser;

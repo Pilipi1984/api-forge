@@ -1,5 +1,6 @@
 ﻿using ApiForge.ApplicationCore.DTOs.Responses;
 using ApiForge.ApplicationCore.Enums;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiForge.Api.Controllers
@@ -8,6 +9,8 @@ namespace ApiForge.Api.Controllers
     /// Controller for checking the status of the API.
     /// </summary>
     [ApiController]
+    [ApiVersion("1.0")]
+    [Route("v{version:apiVersion}/status")]
     [Route("status")]
     [ProducesResponseType(typeof(StatusResponse), StatusCodes.Status200OK)]
     public class StatusController : ControllerBase
