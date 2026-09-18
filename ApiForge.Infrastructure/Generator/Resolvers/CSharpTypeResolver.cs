@@ -19,7 +19,9 @@ namespace ApiForge.Infrastructure.Generator.Resolvers
         public static string Resolve(ApiSchema? schema, string modelsNamespace)
         {
             if (schema is null)
+            {
                 return "object";
+            }
 
             var baseType = schema switch
             {

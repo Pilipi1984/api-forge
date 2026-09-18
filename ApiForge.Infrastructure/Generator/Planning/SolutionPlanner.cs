@@ -101,7 +101,9 @@ namespace ApiForge.Infrastructure.Generator.Planning
                 var name = MakeUnique(NameHelper.ToValidIdentifier(parameter.Name), usedNames);
                 var type = CSharpTypeResolver.NormalizePrimitive(parameter.Type);
                 if (!parameter.Required)
+                {
                     type += "?";
+                }
 
                 result.Add(new ParameterPlan { Name = name, CSharpType = type, Source = parameter });
             }
@@ -119,7 +121,10 @@ namespace ApiForge.Infrastructure.Generator.Planning
             var name = candidate;
             var i = 1;
             while (!used.Add(name))
+            {
                 name = candidate + i++;
+            }
+
             return name;
         }
 
