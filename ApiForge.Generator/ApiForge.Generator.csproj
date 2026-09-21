@@ -1,13 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
-  </ItemGroup>
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<PackageId>ApiForge.Generator</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>TODO</Authors>
+		<Description>Generates a typed C# client solution (Domain/Application/Infrastructure/Client) from an OpenAPI spec, in-process — no HTTP call to ApiForge required.</Description>
+		<PackageTags>openapi;codegen;client-generator;dotnet</PackageTags>
+		<RepositoryUrl>https://github.com/Pilipi1984/api-forge</RepositoryUrl>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\ApiForge.Domain\ApiForge.Domain.csproj" />
+		<ProjectReference Include="..\ApiForge.Application\ApiForge.ApplicationCore.csproj" />
+		<ProjectReference Include="..\ApiForge.Infrastructure\ApiForge.Infrastructure.csproj" />
+	</ItemGroup>
 </Project>
