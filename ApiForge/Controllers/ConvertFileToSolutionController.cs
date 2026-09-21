@@ -1,9 +1,11 @@
 ﻿using ApiForge.Application.Interfaces;
+using ApiForge.Domain.Enums;
+using ApiForge.Generator;
 using ApiForge.Infrastructure.Helpers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.IO.Compression;
+using SharpYaml;
 
 namespace ApiForge.Api.Controllers
 {
@@ -12,12 +14,10 @@ namespace ApiForge.Api.Controllers
     [Route("v{version:apiVersion}/convert")]
     public class ConvertFileToSolutionController : ControllerBase
     {
-        private readonly IOpenApiParser _parser;
-        private readonly ICodeGenerator _generator;
+        private readonly ApiForgeGenerator _generator;
 
-        public ConvertFileToSolutionController(IOpenApiParser parser, ICodeGenerator generator)
+        public ConvertFileToSolutionController(ApiForgeGenerator generator)
         {
-            _parser = parser;
             _generator = generator;
         }
 
@@ -48,13 +48,9 @@ namespace ApiForge.Api.Controllers
 
             try
             {
-                await using var stream = file.OpenReadStream();
-                var definition = await _parser.ParseAsync(stream);
-
-                // "auto" (or no selection) keeps the architecture detected from the spec itself.
-                // Any other recognized value explicitly overrides it.
+                ArchitectureStyle? architectureOverride = null;
                 var isExplicitOverride = !string.IsNullOrWhiteSpace(architecture) &&
-                    !string.Equals(architecture, "auto", StringComparison.OrdinalIgnoreCase);
+                                    !string.Equals(architecture, "auto", StringComparison.OrdinalIgnoreCase);
 
                 if (isExplicitOverride)
                 {
@@ -63,25 +59,13 @@ namespace ApiForge.Api.Controllers
                         return BadRequest(new { error = $"Unrecognized architecture value: '{architecture}'. Use 'auto', 'clean' or 'hexagonal'." });
                     }
 
-                    definition.Architecture = selectedStyle;
+                    architectureOverride = selectedStyle;
                 }
 
-                var solution = await _generator.GenerateAsync(definition);
-
-                using var memoryStream = new MemoryStream();
-                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, leaveOpen: true))
-                {
-                    foreach (var generatedFile in solution.Files)
-                    {
-                        var entry = archive.CreateEntry(generatedFile.RelativePath, CompressionLevel.Optimal);
-                        await using var entryStream = entry.Open();
-                        await using var writer = new StreamWriter(entryStream);
-                        await writer.WriteAsync(generatedFile.Content);
-                    }
-                }
-
-                memoryStream.Position = 0;
-                return File(memoryStream.ToArray(), "application/zip", $"{solution.Name}.zip");
+                await using var stream = file.OpenReadStream();
+                var zip = await _generator.GenerateZipAsync(stream, architectureOverride);
+                
+                return File(zip.Content, "application/zip", $"{zip.Name}.zip");
             }
             catch (Exception ex)
             {

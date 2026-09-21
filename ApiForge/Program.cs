@@ -1,4 +1,5 @@
 using ApiForge.Application.Interfaces;
+using ApiForge.Generator;
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
 using Asp.Versioning;
@@ -24,6 +25,7 @@ builder.Services.AddApiVersioning(options =>
 
 builder.Services.AddScoped<IOpenApiParser, OpenApiParser>();
 builder.Services.AddScoped<ICodeGenerator, CodeGenerator>();
+builder.Services.AddScoped<ApiForgeGenerator>();
 
 var app = builder.Build();
 

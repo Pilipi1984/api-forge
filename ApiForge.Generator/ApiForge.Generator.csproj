@@ -9,17 +9,24 @@
 	<PropertyGroup>
 		<IsPackable>true</IsPackable>
 		<PackageId>ApiForge.Generator</PackageId>
-		<Version>1.0.0</Version>
 		<Authors>TODO</Authors>
 		<Description>Generates a typed C# client solution (Domain/Application/Infrastructure/Client) from an OpenAPI spec, in-process — no HTTP call to ApiForge required.</Description>
 		<PackageTags>openapi;codegen;client-generator;dotnet</PackageTags>
 		<RepositoryUrl>https://github.com/Pilipi1984/api-forge</RepositoryUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<MinVerTagPrefix>v</MinVerTagPrefix>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\ApiForge.Domain\ApiForge.Domain.csproj" />
 		<ProjectReference Include="..\ApiForge.Application\ApiForge.ApplicationCore.csproj" />
 		<ProjectReference Include="..\ApiForge.Infrastructure\ApiForge.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MinVer" Version="8.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 </Project>
