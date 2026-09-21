@@ -9,12 +9,16 @@
 	<PropertyGroup>
 		<IsPackable>true</IsPackable>
 		<PackageId>ApiForge.Generator</PackageId>
-		<Authors>TODO</Authors>
+		<Authors>Pilar Pérez de Inestrosa Sánchez</Authors>
 		<Description>Generates a typed C# client solution (Domain/Application/Infrastructure/Client) from an OpenAPI spec, in-process — no HTTP call to ApiForge required.</Description>
 		<PackageTags>openapi;codegen;client-generator;dotnet</PackageTags>
 		<RepositoryUrl>https://github.com/Pilipi1984/api-forge</RepositoryUrl>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<MinVerTagPrefix>v</MinVerTagPrefix>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/Pilipi1984/api-forge</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -22,7 +26,11 @@
 		<ProjectReference Include="..\ApiForge.Application\ApiForge.ApplicationCore.csproj" />
 		<ProjectReference Include="..\ApiForge.Infrastructure\ApiForge.Infrastructure.csproj" />
 	</ItemGroup>
-
+	
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	
 	<ItemGroup>
 		<PackageReference Include="MinVer" Version="8.0.0">
 			<PrivateAssets>all</PrivateAssets>
