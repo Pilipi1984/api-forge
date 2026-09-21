@@ -47,8 +47,8 @@ namespace ApiForge.Generator
         }
 
         /// <summary>
-        /// Igual que <see cref="GenerateAsync"/> pero devuelve la solución empaquetada como .zip,
-        /// equivalente a lo que devuelve el endpoint <c>POST /v1/convert</c>.
+        /// Same as <see cref="GenerateAsync"/> but returns the solution packaged as a .zip file,
+        /// equivalent to what the <c>POST /v1/convert</c> endpoint returns.
         /// </summary>
         public async Task<byte[]> GenerateZipAsync(
             Stream openApiSpec,
