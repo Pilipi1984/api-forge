@@ -5,7 +5,6 @@
     /// </summary>
     public sealed record ObjectSchema : ApiSchema
     {
-        public IReadOnlyList<ApiProperty> Properties { get; init; }
-            = [];
+        public IReadOnlyList<ApiProperty> Properties { get; init; } = [];
     }
 }

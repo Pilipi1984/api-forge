@@ -1,14 +1,14 @@
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Generator.Planning;
 using ApiForge.Domain.GeneratedApiSolution;
-using NUnit.Framework;
+using Xunit;
 using System.Collections.Generic;
 
 namespace ApiForge.Tests.Generators
 {
     public class DependencyInjectionGeneratorTests
     {
-        [Test]
+        [Fact]
         public void Generate_IncludesHttpClientRegistrations_AndExtensionName()
         {
             var conventions = ArchitectureConventions.For(ApiForge.Domain.Enums.ArchitectureStyle.Clean);
@@ -33,10 +33,10 @@ namespace ApiForge.Tests.Generators
 
             var file = DependencyInjectionGenerator.Generate(plan);
 
-            Assert.IsNotNull(file);
-            Assert.IsTrue(file.Content.Contains("AddHttpClient<"));
-            Assert.IsTrue(file.Content.Contains(ns.ClientsExtensionMethodName));
-            Assert.IsTrue(file.RelativePath.EndsWith("ServiceCollectionExtensions.cs"));
+            Assert.NotNull(file);
+            Assert.Contains("AddHttpClient<", file.Content);
+            Assert.Contains(ns.ClientsExtensionMethodName, file.Content);
+            Assert.EndsWith("ServiceCollectionExtensions.cs", file.RelativePath);
         }
     }
 }

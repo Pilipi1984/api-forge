@@ -1,13 +1,13 @@
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Domain.Models;
-using NUnit.Framework;
+using Xunit;
 using System.Linq;
 
 namespace ApiForge.Tests.Generators
 {
     public class CodeGeneratorTests
     {
-        [Test]
+        [Fact]
         public async Task GenerateAsync_ReturnsSolutionWithFiles()
         {
             var generator = new CodeGenerator();
@@ -15,10 +15,10 @@ namespace ApiForge.Tests.Generators
 
             var solution = await generator.GenerateAsync(def);
 
-            Assert.IsNotNull(solution);
-            Assert.IsNotEmpty(solution.Files);
-            Assert.IsNotNull(solution.Name);
-            Assert.IsTrue(solution.Files.Any(f => f.RelativePath.EndsWith(".sln") || f.RelativePath.EndsWith("Program.cs") || f.RelativePath.EndsWith(".csproj")));
+            Assert.NotNull(solution);
+            Assert.NotEmpty(solution.Files);
+            Assert.NotNull(solution.Name);
+            Assert.True(solution.Files.Any(f => f.RelativePath.EndsWith(".sln") || f.RelativePath.EndsWith("Program.cs") || f.RelativePath.EndsWith(".csproj")));
         }
     }
 }

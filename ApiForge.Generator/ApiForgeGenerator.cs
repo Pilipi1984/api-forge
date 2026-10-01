@@ -63,7 +63,7 @@ namespace ApiForge.Generator
                 foreach (var file in solution.Files)
                 {
                     var entry = archive.CreateEntry(file.RelativePath, CompressionLevel.Optimal);
-                    await using var entryStream = entry.Open();
+                    await using var entryStream = await entry.OpenAsync();
                     await using var writer = new StreamWriter(entryStream);
                     await writer.WriteAsync(file.Content);
                 }

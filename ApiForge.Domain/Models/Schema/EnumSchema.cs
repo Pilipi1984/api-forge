@@ -5,7 +5,6 @@
     /// </summary>
     public sealed record EnumSchema : ApiSchema
     {
-        public IReadOnlyList<string> Values { get; init; }
-            = [];
+        public IReadOnlyList<string> Values { get; init; } = [];
     }
 }

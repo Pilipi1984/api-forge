@@ -20,16 +20,15 @@
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageReference Include="Microsoft.OpenApi" Version="3.10.2" />
-    <PackageReference Include="NUnit" Version="4.6.1" />
-    <PackageReference Include="NUnit.Analyzers" Version="4.14.0">
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NUnit3TestAdapter" Version="6.3.0" />
+    <!-- NUnit3TestAdapter removed: rely on Visual Studio Test Adapter or external runner -->
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="NUnit.Framework" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>

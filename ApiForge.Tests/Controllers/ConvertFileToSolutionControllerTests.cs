@@ -4,6 +4,7 @@ using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Xunit;
 using System.IO.Compression;
 using System.Text;
 
@@ -11,19 +12,18 @@ namespace ApiForge.Tests.Controllers
 {
     public class ConvertFileToSolutionControllerTests
     {
-        [Test]
+        [Fact]
         public async Task Post_Returns_BadRequest_When_NoFile()
         {
             var controller = new ConvertFileToSolutionController(new Generator.ApiForgeGenerator(new DummyParser(), new DummyGenerator()));
 
             var result = await controller.Post(null, null);
 
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-            var bad = (BadRequestObjectResult)result;
-            Assert.IsNotNull(bad.Value);
+            var bad = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.NotNull(bad.Value);
         }
 
-        [Test]
+        [Fact]
         public async Task Post_Returns_BadRequest_When_ParserThrows()
         {
             var controller = new ConvertFileToSolutionController(new ApiForge.Generator.ApiForgeGenerator(new ThrowingParser(), new DummyGenerator()));
@@ -31,12 +31,11 @@ namespace ApiForge.Tests.Controllers
             var file = CreateFormFile("content");
             var result = await controller.Post(file, null);
 
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-            var bad = (BadRequestObjectResult)result;
-            Assert.That(bad.Value?.ToString() ?? string.Empty, Does.Contain("Failed to generate solution"));
+            var bad = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Contains("Failed to generate solution", bad.Value?.ToString() ?? string.Empty);
         }
 
-        [Test]
+        [Fact]
         public async Task Post_Returns_BadRequest_When_InvalidArchitecture()
         {
             var controller = new ConvertFileToSolutionController(new ApiForge.Generator.ApiForgeGenerator(new DummyParser(), new DummyGenerator()));
@@ -44,12 +43,11 @@ namespace ApiForge.Tests.Controllers
             var file = CreateFormFile("content");
             var result = await controller.Post(file, "invalid-arch");
 
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-            var bad = (BadRequestObjectResult)result;
-            Assert.That(bad.Value?.ToString() ?? string.Empty, Does.Contain("Unrecognized architecture value"));
+            var bad = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Contains("Unrecognized architecture value", bad.Value?.ToString() ?? string.Empty);
         }
 
-        [Test]
+        [Fact]
         public async Task Post_Returns_ZipFile_OnSuccess()
         {
             var generator = new DummyGenerator();
@@ -58,19 +56,18 @@ namespace ApiForge.Tests.Controllers
             var file = CreateFormFile("content");
             var result = await controller.Post(file, null);
 
-            Assert.IsInstanceOf<FileContentResult>(result);
-            var fileResult = (FileContentResult)result;
-            Assert.AreEqual("application/zip", fileResult.ContentType);
-            Assert.AreEqual($"{generator.Solution.Name}.zip", fileResult.FileDownloadName);
+            var fileResult = Assert.IsType<FileContentResult>(result);
+            Assert.Equal("application/zip", fileResult.ContentType);
+            Assert.Equal($"{generator.Solution.Name}.zip", fileResult.FileDownloadName);
 
             // Verify zip content contains the generated file
             using var ms = new MemoryStream(fileResult.FileContents);
             using var archive = new ZipArchive(ms, ZipArchiveMode.Read);
             var entry = archive.GetEntry(generator.Solution.Files[0].RelativePath);
-            Assert.IsNotNull(entry);
+            Assert.NotNull(entry);
             using var reader = new StreamReader(entry.Open(), Encoding.UTF8);
             var text = await reader.ReadToEndAsync();
-            Assert.AreEqual(generator.Solution.Files[0].Content, text);
+            Assert.Equal(generator.Solution.Files[0].Content, text);
         }
 
         private static IFormFile CreateFormFile(string content)

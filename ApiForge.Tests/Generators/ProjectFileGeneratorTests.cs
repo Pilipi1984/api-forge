@@ -4,25 +4,29 @@ namespace ApiForge.Tests.Generators
 {
     public class ProjectFileGeneratorTests
     {
-        private static readonly object[] RootsAndStyles =
+        public static IEnumerable<object[]> RootsAndStyles()
         {
-            new object[] { "TestRoot", ApiForge.Domain.Enums.ArchitectureStyle.Clean },
-            new object[] { "Acme.App", ApiForge.Domain.Enums.ArchitectureStyle.Hexagonal }
+            object[] objects = new object[] { "Acme.App", Domain.Enums.ArchitectureStyle.Hexagonal };
+            return new[]
+                    {
+            ["TestRoot", Domain.Enums.ArchitectureStyle.Clean],
+            objects
         };
+        }
 
-        [Test]
-        [TestCaseSource(nameof(RootsAndStyles))]
-        public void GenerateProjectFiles_ReturnsCoreFiles(string rootNamespace, ApiForge.Domain.Enums.ArchitectureStyle style)
+        [Theory]
+        [MemberData(nameof(RootsAndStyles))]
+        public void GenerateProjectFiles_ReturnsCoreFiles(string rootNamespace, Domain.Enums.ArchitectureStyle style)
         {
-            var conventions = ApiForge.Infrastructure.Generator.Planning.ArchitectureConventions.For(style);
-            var ns = ApiForge.Infrastructure.Generator.Planning.ProjectNamespaces.From(rootNamespace, conventions);
+            var conventions = Infrastructure.Generator.Planning.ArchitectureConventions.For(style);
+            var ns = Infrastructure.Generator.Planning.ProjectNamespaces.From(rootNamespace, conventions);
 
             var files = ProjectFileGenerator.GenerateProjectFiles(ns);
 
-            Assert.IsNotNull(files);
-            Assert.IsTrue(files.Any(f => f.RelativePath.EndsWith(".csproj")), "Expected at least one .csproj file");
+            Assert.NotNull(files);
+            Assert.True(files.Any(f => f.RelativePath.EndsWith(".csproj")), "Expected at least one .csproj file");
             // Ensure csproj contains the target framework for each generated project
-            Assert.IsTrue(files.All(f => f.Content.Contains("<TargetFramework>net10.0</TargetFramework>")));
+            Assert.True(files.All(f => f.Content.Contains("<TargetFramework>net10.0</TargetFramework>")));
         }
     }
 }

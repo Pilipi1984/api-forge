@@ -4,7 +4,7 @@ using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Framework;
+using Xunit;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace ApiForge.Tests.Integration
 {
     public class EndToEndTests
     {
-        [Test]
+        [Fact]
         public async Task FullPipeline_GeneratesZip()
         {
             var parser = new OpenApiParser();
@@ -26,13 +26,12 @@ namespace ApiForge.Tests.Integration
 
             var result = await controller.Post(file, "auto");
 
-            Assert.IsInstanceOf<FileContentResult>(result);
-            var fileResult = (FileContentResult)result;
-            Assert.AreEqual("application/zip", fileResult.ContentType);
+            var fileResult = Assert.IsType<FileContentResult>(result);
+            Assert.Equal("application/zip", fileResult.ContentType);
 
             using var ms = new MemoryStream(fileResult.FileContents);
             using var archive = new System.IO.Compression.ZipArchive(ms, System.IO.Compression.ZipArchiveMode.Read);
-            Assert.IsTrue(archive.Entries.Any());
+            Assert.True(archive.Entries.Any());
         }
     }
 }

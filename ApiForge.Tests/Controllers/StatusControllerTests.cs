@@ -1,13 +1,13 @@
 using ApiForge.Api.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
+using Xunit;
 
 namespace ApiForge.Tests.Controllers
 {
     public class StatusControllerTests
     {
-        [Test]
+        [Fact]
         public void Get_ReturnsOk()
         {
             var controller = new StatusController();
@@ -23,7 +23,7 @@ namespace ApiForge.Tests.Controllers
             };
 
             var result = controller.Get();
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsType<OkObjectResult>(result);
         }
     }
 
