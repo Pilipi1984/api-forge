@@ -2,7 +2,6 @@
 using ApiForge.Domain.Enums;
 using ApiForge.Infrastructure.Helpers;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiForge.Api.Controllers
@@ -29,7 +28,7 @@ namespace ApiForge.Api.Controllers
         [HttpPost]
         [RequestSizeLimit(20_000_000)]
         [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(
             IFormFile? file,
             [FromForm] string? architecture)

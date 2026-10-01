@@ -32,7 +32,7 @@ namespace ApiForge.Tests.Resolvers
         [Fact]
         public void Resolve_Array_ProducesList()
         {
-            var array = new ArraySchema { OpenApiType = "array", ClrType = "List", ItemSchema = new PrimitiveSchema { OpenApiType = "integer", ClrType = "Int32" } };
+            var array = new ApiForge.Domain.Models.Schema.ArraySchema { OpenApiType = "array", ClrType = "List", ItemSchema = new ApiForge.Domain.Models.Schema.PrimitiveSchema { OpenApiType = "integer", ClrType = "Int32" } };
             var actual = CSharpTypeResolver.Resolve(array, "Root.Models");
             Assert.Equal("List<int>", actual);
         }
@@ -40,7 +40,7 @@ namespace ApiForge.Tests.Resolvers
         [Fact]
         public void Resolve_Enum_IsString_WithNullable()
         {
-            var e = new EnumSchema { OpenApiType = "string", ClrType = "String", Nullable = true };
+            var e = new ApiForge.Domain.Models.Schema.EnumSchema { OpenApiType = "string", ClrType = "String", Nullable = true };
             var actual = CSharpTypeResolver.Resolve(e, "Root.Models");
             Assert.Equal("string?", actual);
         }
@@ -48,7 +48,7 @@ namespace ApiForge.Tests.Resolvers
         [Fact]
         public void Resolve_Reference_ResolvesFullName()
         {
-            var r = new ReferenceSchema { OpenApiType = "ref", ClrType = "Ref", ReferenceName = "Company.Product.ClassName" };
+            var r = new ApiForge.Domain.Models.Schema.ReferenceSchema { OpenApiType = "ref", ClrType = "Ref", ReferenceName = "Company.Product.ClassName" };
             var actual = CSharpTypeResolver.Resolve(r, "Root.Models");
             Assert.Equal("Root.Models.Company.Product.ClassName", actual);
         }

@@ -32,7 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApiForge\ApiForge.Api.csproj" />
+    <!-- Removed project references to avoid loading production assemblies; tests will use local stubs in TestFakes. -->
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.0" />
   </ItemGroup>
 
 </Project>
