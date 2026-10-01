@@ -1,20 +1,18 @@
 ﻿using ApiForge.Application.Interfaces;
 using ApiForge.Domain.Enums;
-using ApiForge.Generator;
 using ApiForge.Infrastructure.Helpers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using SharpYaml;
 
 namespace ApiForge.Api.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/convert")]
-    public class ConvertFileToSolutionController(ApiForgeGenerator generator) : ControllerBase
+    public class ConvertFileToSolutionController(IApiForgeGenerator generator) : ControllerBase
     {
-        private readonly ApiForgeGenerator _generator = generator;
+        private readonly IApiForgeGenerator _generator = generator;
 
 
         /// <summary>

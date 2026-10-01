@@ -1,13 +1,7 @@
 using ApiForge.Api.Controllers;
-using ApiForge.Application.Interfaces;
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Xunit;
-using System.IO;
-using System.Linq;
-using System.Text;
 using ApiForge.Tests.Helpers;
 
 namespace ApiForge.Tests.Integration
@@ -31,7 +25,7 @@ namespace ApiForge.Tests.Integration
 
             using var ms = new MemoryStream(fileResult.FileContents);
             using var archive = new System.IO.Compression.ZipArchive(ms, System.IO.Compression.ZipArchiveMode.Read);
-            Assert.True(archive.Entries.Any());
+            Assert.Contains(true, archive.Entries.Select(e => !string.IsNullOrWhiteSpace(e.FullName)));
         }
     }
 }

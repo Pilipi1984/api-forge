@@ -6,7 +6,7 @@ namespace ApiForge.Tests.Generators
     {
         public static IEnumerable<object[]> RootsAndStyles()
         {
-            object[] objects = new object[] { "Acme.App", Domain.Enums.ArchitectureStyle.Hexagonal };
+            object[] objects = ["Acme.App", Domain.Enums.ArchitectureStyle.Hexagonal];
             return new[]
                     {
             ["TestRoot", Domain.Enums.ArchitectureStyle.Clean],
@@ -24,9 +24,9 @@ namespace ApiForge.Tests.Generators
             var files = ProjectFileGenerator.GenerateProjectFiles(ns);
 
             Assert.NotNull(files);
-            Assert.True(files.Any(f => f.RelativePath.EndsWith(".csproj")), "Expected at least one .csproj file");
+            Assert.Contains(true, files.Select(f => f.RelativePath.EndsWith(".csproj")));
             // Ensure csproj contains the target framework for each generated project
-            Assert.True(files.All(f => f.Content.Contains("<TargetFramework>net10.0</TargetFramework>")));
+            Assert.DoesNotContain(false, files.Select(f => f.Content.Contains("<TargetFramework>net10.0</TargetFramework>")));
         }
     }
 }

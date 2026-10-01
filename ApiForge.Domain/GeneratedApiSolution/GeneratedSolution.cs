@@ -21,4 +21,19 @@
 
         public IReadOnlyList<GeneratedFile> Files { get; init; } = [];
     }
+
+    /// <summary>
+    /// Generated .zip archive containing the solution files, ready for download.
+    /// </summary>
+    public sealed record GeneratedZipArchive
+    {
+        /// <summary>
+        /// Name of the generated solution (used as the .zip file name).
+        /// </summary>
+        public required string Name { get; init; }
+        /// <summary>
+        /// Content of the generated .zip file.
+        /// </summary>
+        public required byte[] Content { get; init; }
+    }
 }

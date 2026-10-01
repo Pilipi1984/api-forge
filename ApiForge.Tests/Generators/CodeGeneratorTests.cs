@@ -1,7 +1,5 @@
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Domain.Models;
-using Xunit;
-using System.Linq;
 
 namespace ApiForge.Tests.Generators
 {
@@ -18,7 +16,7 @@ namespace ApiForge.Tests.Generators
             Assert.NotNull(solution);
             Assert.NotEmpty(solution.Files);
             Assert.NotNull(solution.Name);
-            Assert.True(solution.Files.Any(f => f.RelativePath.EndsWith(".sln") || f.RelativePath.EndsWith("Program.cs") || f.RelativePath.EndsWith(".csproj")));
+            Assert.Contains(true, solution.Files.Select(f => f.RelativePath.EndsWith(".sln") || f.RelativePath.EndsWith("Program.cs") || f.RelativePath.EndsWith(".csproj")));
         }
     }
 }

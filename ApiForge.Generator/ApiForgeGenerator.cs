@@ -4,8 +4,6 @@ using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
 using System.IO.Compression;
-using System.Reflection.Metadata;
-using System.Xml.Linq;
 
 namespace ApiForge.Generator
 {
@@ -16,7 +14,7 @@ namespace ApiForge.Generator
     /// <remarks>
     /// Creates a generator with custom implementations (useful for testing or DI).
     /// </remarks>
-    public sealed class ApiForgeGenerator(IOpenApiParser parser, ICodeGenerator generator)
+    public sealed class ApiForgeGenerator(IOpenApiParser parser, ICodeGenerator generator) : IApiForgeGenerator
     {
         private readonly IOpenApiParser _parser = parser ?? throw new ArgumentNullException(nameof(parser));
         private readonly ICodeGenerator _generator = generator ?? throw new ArgumentNullException(nameof(generator));
@@ -75,20 +73,5 @@ namespace ApiForge.Generator
                 Content = memoryStream.ToArray()
             };
         }
-    }
-
-    /// <summary>
-    /// Generated .zip archive containing the solution files, ready for download.
-    /// </summary>
-    public sealed record GeneratedZipArchive
-    {
-        /// <summary>
-        /// Name of the generated solution (used as the .zip file name).
-        /// </summary>
-        public required string Name { get; init; }
-        /// <summary>
-        /// Content of the generated .zip file.
-        /// </summary>
-        public required byte[] Content { get; init; }
     }
 }

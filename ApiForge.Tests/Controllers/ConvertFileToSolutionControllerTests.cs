@@ -4,7 +4,6 @@ using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Xunit;
 using System.IO.Compression;
 using System.Text;
 
@@ -15,7 +14,7 @@ namespace ApiForge.Tests.Controllers
         [Fact]
         public async Task Post_Returns_BadRequest_When_NoFile()
         {
-            var controller = new ConvertFileToSolutionController(new Generator.ApiForgeGenerator(new DummyParser(), new DummyGenerator()));
+            var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator());
 
             var result = await controller.Post(null, null);
 
@@ -26,7 +25,7 @@ namespace ApiForge.Tests.Controllers
         [Fact]
         public async Task Post_Returns_BadRequest_When_ParserThrows()
         {
-            var controller = new ConvertFileToSolutionController(new ApiForge.Generator.ApiForgeGenerator(new ThrowingParser(), new DummyGenerator()));
+            var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator(shouldThrow: true));
 
             var file = CreateFormFile("content");
             var result = await controller.Post(file, null);
@@ -38,7 +37,7 @@ namespace ApiForge.Tests.Controllers
         [Fact]
         public async Task Post_Returns_BadRequest_When_InvalidArchitecture()
         {
-            var controller = new ConvertFileToSolutionController(new ApiForge.Generator.ApiForgeGenerator(new DummyParser(), new DummyGenerator()));
+            var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator());
 
             var file = CreateFormFile("content");
             var result = await controller.Post(file, "invalid-arch");
@@ -51,7 +50,7 @@ namespace ApiForge.Tests.Controllers
         public async Task Post_Returns_ZipFile_OnSuccess()
         {
             var generator = new DummyGenerator();
-            var controller = new ConvertFileToSolutionController(new ApiForge.Generator.ApiForgeGenerator(new DummyParser(), generator));
+            var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator(generator.Solution));
 
             var file = CreateFormFile("content");
             var result = await controller.Post(file, null);
@@ -68,6 +67,44 @@ namespace ApiForge.Tests.Controllers
             using var reader = new StreamReader(entry.Open(), Encoding.UTF8);
             var text = await reader.ReadToEndAsync();
             Assert.Equal(generator.Solution.Files[0].Content, text);
+        }
+
+        private class FakeApiForgeGenerator : IApiForgeGenerator
+        {
+            private readonly GeneratedSolution? _solution;
+            private readonly bool _shouldThrow;
+
+            public FakeApiForgeGenerator(GeneratedSolution? solution = null, bool shouldThrow = false)
+            {
+                _solution = solution;
+                _shouldThrow = shouldThrow;
+            }
+
+            public Task<GeneratedSolution> GenerateAsync(Stream openApiSpec, ApiForge.Domain.Enums.ArchitectureStyle? architectureOverride = null)
+            {
+                if (_shouldThrow) throw new InvalidOperationException("parse failed");
+                return Task.FromResult(_solution ?? new GeneratedSolution { Name = "Stub", RootNamespace = "R", Files = new List<GeneratedFile>() });
+            }
+
+            public async Task<GeneratedZipArchive> GenerateZipAsync(Stream openApiSpec, ApiForge.Domain.Enums.ArchitectureStyle? architectureOverride = null)
+            {
+                if (_shouldThrow) throw new InvalidOperationException("parse failed");
+
+                var sol = _solution ?? new GeneratedSolution { Name = "Stub", RootNamespace = "R", Files = new List<GeneratedFile>() };
+                using var ms = new MemoryStream();
+                using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+                {
+                    foreach (var file in sol.Files)
+                    {
+                        var entry = archive.CreateEntry(file.RelativePath, CompressionLevel.Optimal);
+                        await using var entryStream = entry.Open();
+                        await using var writer = new StreamWriter(entryStream);
+                        await writer.WriteAsync(file.Content);
+                    }
+                }
+
+                return new GeneratedZipArchive { Name = sol.Name, Content = ms.ToArray() };
+            }
         }
 
         private static IFormFile CreateFormFile(string content)
@@ -106,7 +143,7 @@ namespace ApiForge.Tests.Controllers
                     RootNamespace = "MyRoot",
                     Files = new List<GeneratedFile>
                     {
-                        new GeneratedFile { RelativePath = "Project/Program.cs", Content = "console" }
+                        new() { RelativePath = "Project/Program.cs", Content = "console" }
                     }
                 };
             }
