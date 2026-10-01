@@ -65,7 +65,7 @@ namespace ApiForge.Tests.Controllers
             var entry = archive.GetEntry(generator.Solution.Files[0].RelativePath);
             Assert.NotNull(entry);
             using var reader = new StreamReader(entry.Open(), Encoding.UTF8);
-            var text = await reader.ReadToEndAsync();
+            var text = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
             Assert.Equal(generator.Solution.Files[0].Content, text);
         }
 

@@ -59,7 +59,7 @@ namespace ApiForge.Tests.Generators
             Assert.NotNull(files);
             var content = files.Select(f => f.Content).FirstOrDefault() ?? string.Empty;
             // Expect two properties with unique names: Id and Id1
-            Assert.Contains(true, [content.Contains(" public int Id "), content.Contains(" public int Id1 ")]);
+            Assert.Contains(true, new bool[] { content.Contains(" public int Id "), content.Contains(" public int Id1 ") });
         }
 
         [Fact]

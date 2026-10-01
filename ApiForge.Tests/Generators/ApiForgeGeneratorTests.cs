@@ -43,7 +43,7 @@ namespace ApiForge.Tests.Generators
             var entry = archive.GetEntry("Project/Program.cs");
             Assert.NotNull(entry);
             using var reader = new StreamReader(entry.Open(), Encoding.UTF8);
-            var content = await reader.ReadToEndAsync();
+            var content = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
             Assert.Equal("console", content);
         }
 
