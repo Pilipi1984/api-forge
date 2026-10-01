@@ -12,14 +12,10 @@ namespace ApiForge.Api.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/convert")]
-    public class ConvertFileToSolutionController : ControllerBase
+    public class ConvertFileToSolutionController(ApiForgeGenerator generator) : ControllerBase
     {
-        private readonly ApiForgeGenerator _generator;
+        private readonly ApiForgeGenerator _generator = generator;
 
-        public ConvertFileToSolutionController(ApiForgeGenerator generator)
-        {
-            _generator = generator;
-        }
 
         /// <summary>
         /// Converts an uploaded OpenAPI spec into a generated .NET solution, zipped for download.
@@ -38,8 +34,7 @@ namespace ApiForge.Api.Controllers
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(
             IFormFile? file,
-            [FromForm] string? architecture,
-            CancellationToken cancellationToken)
+            [FromForm] string? architecture)
         {
             if (file is null || file.Length == 0)
             {

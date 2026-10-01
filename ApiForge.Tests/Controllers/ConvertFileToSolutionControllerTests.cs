@@ -14,9 +14,9 @@ namespace ApiForge.Tests.Controllers
         [Test]
         public async Task Post_Returns_BadRequest_When_NoFile()
         {
-            var controller = new ConvertFileToSolutionController(new DummyParser(), new DummyGenerator());
+            var controller = new ConvertFileToSolutionController(new Generator.ApiForgeGenerator(new DummyParser(), new DummyGenerator()));
 
-            var result = await controller.Post(null, null, CancellationToken.None);
+            var result = await controller.Post(null, null);
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             var bad = (BadRequestObjectResult)result;
@@ -26,10 +26,10 @@ namespace ApiForge.Tests.Controllers
         [Test]
         public async Task Post_Returns_BadRequest_When_ParserThrows()
         {
-            var controller = new ConvertFileToSolutionController(new ThrowingParser(), new DummyGenerator());
+            var controller = new ConvertFileToSolutionController(new ApiForge.Generator.ApiForgeGenerator(new ThrowingParser(), new DummyGenerator()));
 
             var file = CreateFormFile("content");
-            var result = await controller.Post(file, null, CancellationToken.None);
+            var result = await controller.Post(file, null);
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             var bad = (BadRequestObjectResult)result;
@@ -39,10 +39,10 @@ namespace ApiForge.Tests.Controllers
         [Test]
         public async Task Post_Returns_BadRequest_When_InvalidArchitecture()
         {
-            var controller = new ConvertFileToSolutionController(new DummyParser(), new DummyGenerator());
+            var controller = new ConvertFileToSolutionController(new ApiForge.Generator.ApiForgeGenerator(new DummyParser(), new DummyGenerator()));
 
             var file = CreateFormFile("content");
-            var result = await controller.Post(file, "invalid-arch", CancellationToken.None);
+            var result = await controller.Post(file, "invalid-arch");
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             var bad = (BadRequestObjectResult)result;
@@ -53,10 +53,10 @@ namespace ApiForge.Tests.Controllers
         public async Task Post_Returns_ZipFile_OnSuccess()
         {
             var generator = new DummyGenerator();
-            var controller = new ConvertFileToSolutionController(new DummyParser(), generator);
+            var controller = new ConvertFileToSolutionController(new ApiForge.Generator.ApiForgeGenerator(new DummyParser(), generator));
 
             var file = CreateFormFile("content");
-            var result = await controller.Post(file, null, CancellationToken.None);
+            var result = await controller.Post(file, null);
 
             Assert.IsInstanceOf<FileContentResult>(result);
             var fileResult = (FileContentResult)result;

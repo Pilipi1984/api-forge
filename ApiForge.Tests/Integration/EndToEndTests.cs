@@ -19,12 +19,12 @@ namespace ApiForge.Tests.Integration
         {
             var parser = new OpenApiParser();
             var generator = new CodeGenerator();
-            var controller = new ConvertFileToSolutionController(parser, generator);
+            var controller = new ConvertFileToSolutionController(new Generator.ApiForgeGenerator(parser, generator));
 
             var yaml = "openapi: 3.0.0\ninfo:\n  title: ET\n  version: 1.0.0\npaths: {}";
             var file = TestHelpers.CreateFormFile(yaml);
 
-            var result = await controller.Post(file, "auto", CancellationToken.None);
+            var result = await controller.Post(file, "auto");
 
             Assert.IsInstanceOf<FileContentResult>(result);
             var fileResult = (FileContentResult)result;

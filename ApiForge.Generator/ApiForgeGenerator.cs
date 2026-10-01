@@ -4,6 +4,8 @@ using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
 using System.IO.Compression;
+using System.Reflection.Metadata;
+using System.Xml.Linq;
 
 namespace ApiForge.Generator
 {
@@ -50,12 +52,11 @@ namespace ApiForge.Generator
         /// Same as <see cref="GenerateAsync"/> but returns the solution packaged as a .zip file,
         /// equivalent to what the <c>POST /v1/convert</c> endpoint returns.
         /// </summary>
-        public async Task<byte[]> GenerateZipAsync(
-            Stream openApiSpec,
-            ArchitectureStyle? architectureOverride = null)
+        public async Task<GeneratedZipArchive> GenerateZipAsync(
+             Stream openApiSpec,
+             ArchitectureStyle? architectureOverride = null)
         {
             var solution = await GenerateAsync(openApiSpec, architectureOverride);
-
             using var memoryStream = new MemoryStream();
             using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, leaveOpen: true))
             {
@@ -68,7 +69,26 @@ namespace ApiForge.Generator
                 }
             }
 
-            return memoryStream.ToArray();
+            return new GeneratedZipArchive
+            {
+                Name = solution.Name,
+                Content = memoryStream.ToArray()
+            };
         }
+    }
+
+    /// <summary>
+    /// Generated .zip archive containing the solution files, ready for download.
+    /// </summary>
+    public sealed record GeneratedZipArchive
+    {
+        /// <summary>
+        /// Name of the generated solution (used as the .zip file name).
+        /// </summary>
+        public required string Name { get; init; }
+        /// <summary>
+        /// Content of the generated .zip file.
+        /// </summary>
+        public required byte[] Content { get; init; }
     }
 }
