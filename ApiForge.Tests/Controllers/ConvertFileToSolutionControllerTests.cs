@@ -64,8 +64,9 @@ namespace ApiForge.Tests.Controllers
             using var archive = new ZipArchive(ms, ZipArchiveMode.Read);
             var entry = archive.GetEntry(generator.Solution.Files[0].RelativePath);
             Assert.NotNull(entry);
-            using var reader = new StreamReader(entry.Open(), Encoding.UTF8);
-            var text = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+            var entryNonNull = entry!;
+            using var reader = new StreamReader(entryNonNull.Open(), Encoding.UTF8);
+            var text = await reader.ReadToEndAsync();
             Assert.Equal(generator.Solution.Files[0].Content, text);
         }
 

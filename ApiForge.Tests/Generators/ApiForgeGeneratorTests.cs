@@ -22,7 +22,8 @@ namespace ApiForge.Tests.Generators
             var solution = await apiForge.GenerateAsync(ms, ArchitectureStyle.Clean);
 
             Assert.NotNull(generator.ReceivedDefinition);
-            Assert.Equal(ArchitectureStyle.Clean, generator.ReceivedDefinition.Architecture);
+            var received = generator.ReceivedDefinition!;
+            Assert.Equal(ArchitectureStyle.Clean, received.Architecture);
         }
 
         [Fact]
@@ -42,8 +43,9 @@ namespace ApiForge.Tests.Generators
             using var archive = new ZipArchive(zipMs, ZipArchiveMode.Read);
             var entry = archive.GetEntry("Project/Program.cs");
             Assert.NotNull(entry);
-            using var reader = new StreamReader(entry.Open(), Encoding.UTF8);
-            var content = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
+            var entryNonNull = entry!;
+            using var reader = new StreamReader(entryNonNull.Open(), Encoding.UTF8);
+            var content = await reader.ReadToEndAsync();
             Assert.Equal("console", content);
         }
 

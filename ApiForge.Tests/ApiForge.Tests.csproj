@@ -6,10 +6,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <!-- Ensure IDE/test tools recognize this as a test project -->
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include=".github\workflows\dotnet-test.yml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ApiForge\ApiForge.Api.csproj" />
+    <ProjectReference Include="..\ApiForge.Generator\ApiForge.Generator.csproj" />
+    <ProjectReference Include="..\ApiForge.Infrastructure\ApiForge.Infrastructure.csproj" />
+    <ProjectReference Include="..\ApiForge.Application\ApiForge.ApplicationCore.csproj" />
+    <ProjectReference Include="..\ApiForge.Domain\ApiForge.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,16 +29,12 @@
     <PackageReference Include="Moq" Version="4.21.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
     <PackageReference Include="Microsoft.OpenApi" Version="3.10.2" />
-    <PackageReference Include="xunit.v3" Version="4.0.1" />
-    <!-- NUnit3TestAdapter removed: rely on Visual Studio Test Adapter or external runner -->
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Removed project references to avoid loading production assemblies; tests will use local stubs in TestFakes. -->
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.12" />
