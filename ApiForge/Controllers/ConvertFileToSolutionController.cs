@@ -11,6 +11,8 @@ namespace ApiForge.Api.Controllers
     [Route("v{version:apiVersion}/convert")]
     public class ConvertFileToSolutionController(IApiForgeGenerator generator) : ControllerBase
     {
+        private const long MaxSpecSizeBytes = 5 * 1024 * 1024; // 5 MB
+
         private readonly IApiForgeGenerator _generator = generator;
 
 
@@ -26,7 +28,8 @@ namespace ApiForge.Api.Controllers
         /// </param>
         /// <param name="cancellationToken"></param>
         [HttpPost]
-        [RequestSizeLimit(20_000_000)]
+        [RequestSizeLimit(MaxSpecSizeBytes)]
+        [RequestFormLimits(MultipartBodyLengthLimit = MaxSpecSizeBytes)]
         [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(
