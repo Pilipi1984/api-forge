@@ -17,5 +17,13 @@ namespace ApiForge.Tests.Parser
             Assert.NotNull(result);
             Assert.Equal("Test", result.Title);
         }
+
+        [Fact]
+        public async Task ParseAsync_NullYaml()
+        {
+            var parser = new OpenApiParser();
+
+            Assert.Throws<AggregateException>(() => parser.ParseAsync(new MemoryStream()).Result);
+        }
     }
 }

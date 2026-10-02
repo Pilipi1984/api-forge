@@ -57,14 +57,14 @@ namespace ApiForge.Tests.Planning
 
             var plan = SolutionPlanner.CreatePlan(def, "Acme.Root");
 
-            var group = plan.Groups.FirstOrDefault();
+            var group = plan.Groups.Any() ? plan.Groups[0] : null;
             Assert.NotNull(group);
-            var ep = group.Endpoints.First();
-            Assert.Equal("UpdateOrder", ep.MethodName);
-            Assert.Equal("string", ep.ReturnType);
-            Assert.Contains(true, ep.PathParameters.Select(p => p.Name == "orderId"));
-            Assert.Contains(true, ep.QueryParameters.Select(p => p.Name == "verbose"));
-            Assert.NotNull(ep.RequestBodyType);
+            var ep = group?.Endpoints[0];
+            Assert.Equal("UpdateOrder", ep?.MethodName);
+            Assert.Equal("string", ep?.ReturnType);
+            Assert.Contains(true, ep?.PathParameters.Select(p => p.Name == "orderId"));
+            Assert.Contains(true, ep?.QueryParameters.Select(p => p.Name == "verbose"));
+            Assert.NotNull(ep?.RequestBodyType);
             Assert.Contains("Order", ep.RequestBodyType);
         }
     }

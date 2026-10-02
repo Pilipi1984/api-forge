@@ -10,6 +10,8 @@ namespace ApiForge.Infrastructure.Generator.Resolvers
     /// </summary>
     public static class CSharpTypeResolver
     {
+        private const string ObjectType = "object";
+
         /// <summary>
         /// Resolves the C# type for a given API schema, taking into account the schema type, nullability, and the specified models namespace.
         /// </summary>
@@ -20,7 +22,7 @@ namespace ApiForge.Infrastructure.Generator.Resolvers
         {
             if (schema is null)
             {
-                return "object";
+                return ObjectType;
             }
 
             var baseType = schema switch
@@ -28,9 +30,9 @@ namespace ApiForge.Infrastructure.Generator.Resolvers
                 ReferenceSchema reference => ResolveReferenceType(reference, modelsNamespace),
                 ArraySchema array => $"List<{Resolve(array.ItemSchema, modelsNamespace)}>",
                 EnumSchema => "string",
-                ObjectSchema => "object",
+                ObjectSchema => ObjectType,
                 PrimitiveSchema primitive => NormalizePrimitive(primitive.ClrType),
-                _ => "object"
+                _ => ObjectType
             };
 
             return schema.Nullable ? baseType + "?" : baseType;
@@ -69,7 +71,9 @@ namespace ApiForge.Infrastructure.Generator.Resolvers
         public static string NormalizePrimitive(string? clrType)
         {
             if (string.IsNullOrWhiteSpace(clrType))
-                return "object";
+            {
+                return ObjectType;
+            }
 
             return clrType switch
             {

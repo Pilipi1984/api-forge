@@ -108,7 +108,7 @@ namespace ApiForge.Tests.Controllers
             }
         }
 
-        private static IFormFile CreateFormFile(string content)
+        private static FormFile CreateFormFile(string content)
         {
             var bytes = Encoding.UTF8.GetBytes(content);
             var ms = new MemoryStream(bytes);

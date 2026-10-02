@@ -50,21 +50,18 @@ namespace ApiForge.Infrastructure.Helpers
         {
             var sb = new StringBuilder();
 
-            foreach (var c in segment)
+            // Only allow letters, digits, and underscores in namespace segments.
+            segment.Where(c => char.IsLetterOrDigit(c) || c == '_').ToList().ForEach(c =>
             {
-                // Los espacios en blanco (y cualquier carácter no alfanumérico/guion bajo) se eliminan.
-                if (char.IsLetterOrDigit(c) || c == '_')
-                {
-                    sb.Append(c);
-                }
-            }
+                sb.Append(c);
+            });
 
             if (sb.Length == 0)
             {
                 return string.Empty;
             }
 
-            // Un segmento de namespace no puede empezar por un dígito.
+            // A namespace segment cannot start with a digit, so we prefix it with an underscore if it does.
             if (char.IsDigit(sb[0]))
             {
                 sb.Insert(0, '_');
