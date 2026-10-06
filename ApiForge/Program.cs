@@ -3,6 +3,7 @@ using ApiForge.Generator;
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
 using Asp.Versioning;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,10 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger(options =>
+    {
+        options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
+    });
     app.UseSwaggerUI();
 }
 
