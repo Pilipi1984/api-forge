@@ -2,7 +2,6 @@
 using ApiForge.Domain.Enums;
 using ApiForge.Infrastructure.Helpers;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiForge.Api.Controllers
@@ -20,7 +19,7 @@ namespace ApiForge.Api.Controllers
         /// <summary>
         /// Converts an uploaded OpenAPI spec into a generated .NET solution, zipped for download.
         /// </summary>
-        /// <param name="file">The OpenAPI spec file (JSON or YAML).</param>
+        /// <param name="path">Path from file</param>
         /// <param name="architecture">
         /// Optional explicit architecture override coming from the UI selector:
         /// "auto" (or omitted) keeps whatever <see cref="IOpenApiParser"/> detected from the spec
@@ -33,10 +32,24 @@ namespace ApiForge.Api.Controllers
         [RequestFormLimits(MultipartBodyLengthLimit = MaxSpecSizeBytes)]
         [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post(
-            IFormFile? file,
+        public async Task<IActionResult> Post(string? path,
             [FromForm] string? architecture)
         {
+            if(string.IsNullOrEmpty(path))
+            {
+                return BadRequest(new { error = "Invalid file path." });
+            }
+
+            IFormFile file;
+            try
+            {
+                file = await FormFileExtensions.CreateFormFileFromPathAsync(path);
+            }
+            catch (IOException)
+            {
+                return BadRequest(new { error = $"Invalid file {path}" });
+            }
+
             if (file is null || file.Length == 0)
             {
                 return BadRequest(new { error = "Upload an OpenAPI file in JSON or YAML format." });

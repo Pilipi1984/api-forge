@@ -14,7 +14,6 @@ namespace ApiForge.Api.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/status")]
-    [Route("status")]
     [ProducesResponseType(typeof(StatusResponse), StatusCodes.Status200OK)]
     public class StatusController : ControllerBase
     {

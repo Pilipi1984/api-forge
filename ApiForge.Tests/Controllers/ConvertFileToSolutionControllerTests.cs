@@ -2,7 +2,6 @@ using ApiForge.Api.Controllers;
 using ApiForge.Application.Interfaces;
 using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
 using System.Text;
@@ -11,6 +10,8 @@ namespace ApiForge.Tests.Controllers
 {
     public class ConvertFileToSolutionControllerTests
     {
+        private const string Path = @"..\..\..\Controllers\TestFiles\test.yml";
+
         [Fact]
         public async Task Post_Returns_BadRequest_When_NoFile()
         {
@@ -27,8 +28,7 @@ namespace ApiForge.Tests.Controllers
         {
             var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator(shouldThrow: true));
 
-            var file = CreateFormFile("content");
-            var result = await controller.Post(file, null);
+            var result = await controller.Post(Path, null);
 
             var bad = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Contains("Failed to generate solution", bad.Value?.ToString() ?? string.Empty);
@@ -39,8 +39,7 @@ namespace ApiForge.Tests.Controllers
         {
             var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator());
 
-            var file = CreateFormFile("content");
-            var result = await controller.Post(file, "invalid-arch");
+            var result = await controller.Post(Path, "invalid-arch");
 
             var bad = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Contains("Unrecognized architecture value", bad.Value?.ToString() ?? string.Empty);
@@ -52,8 +51,7 @@ namespace ApiForge.Tests.Controllers
             var generator = new DummyGenerator();
             var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator(generator.Solution));
 
-            var file = CreateFormFile("content");
-            var result = await controller.Post(file, null);
+            var result = await controller.Post(Path, null);
 
             var fileResult = Assert.IsType<FileContentResult>(result);
             Assert.Equal("application/zip", fileResult.ContentType);
@@ -108,13 +106,6 @@ namespace ApiForge.Tests.Controllers
             }
         }
 
-        private static FormFile CreateFormFile(string content)
-        {
-            var bytes = Encoding.UTF8.GetBytes(content);
-            var ms = new MemoryStream(bytes);
-            return new FormFile(ms, 0, bytes.Length, "file", "test.yaml");
-        }
-
         private class DummyParser : IOpenApiParser
         {
             public Task<ApiDefinition> ParseAsync(Stream stream)
@@ -142,10 +133,10 @@ namespace ApiForge.Tests.Controllers
                 {
                     Name = "MySolution",
                     RootNamespace = "MyRoot",
-                    Files = new List<GeneratedFile>
-                    {
+                    Files =
+                    [
                         new() { RelativePath = "Project/Program.cs", Content = "console" }
-                    }
+                    ]
                 };
             }
 

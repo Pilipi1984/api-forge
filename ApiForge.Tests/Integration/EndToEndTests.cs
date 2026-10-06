@@ -15,10 +15,9 @@ namespace ApiForge.Tests.Integration
             var generator = new CodeGenerator();
             var controller = new ConvertFileToSolutionController(new Generator.ApiForgeGenerator(parser, generator));
 
-            var yaml = "openapi: 3.0.0\ninfo:\n  title: ET\n  version: 1.0.0\npaths: {}";
-            var file = TestHelpers.CreateFormFile(yaml);
+            var path = @"..\..\..\Integration\TestFiles\test.yml";
 
-            var result = await controller.Post(file, "auto");
+            var result = await controller.Post(path, "auto");
 
             var fileResult = Assert.IsType<FileContentResult>(result);
             Assert.Equal("application/zip", fileResult.ContentType);
