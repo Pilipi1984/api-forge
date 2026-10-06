@@ -9,7 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -30,16 +29,6 @@ builder.Services.AddScoped<ICodeGenerator, CodeGenerator>();
 builder.Services.AddScoped<ApiForgeGenerator>();
 
 var app = builder.Build();
-
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger(options =>
-    {
-        options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
-    });
-    app.UseSwaggerUI();
-}
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
