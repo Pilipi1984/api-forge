@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -19,6 +20,7 @@ builder.Services.AddApiVersioning(options =>
 .AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";
+    options.AssumeDefaultVersionWhenUnspecified = true;
     options.SubstituteApiVersionInUrl = true;
 });
 
@@ -27,6 +29,13 @@ builder.Services.AddScoped<ICodeGenerator, CodeGenerator>();
 builder.Services.AddScoped<ApiForgeGenerator>();
 
 var app = builder.Build();
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

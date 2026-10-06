@@ -2,6 +2,7 @@
 using ApiForge.Domain.Enums;
 using ApiForge.Infrastructure.Helpers;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiForge.Api.Controllers
