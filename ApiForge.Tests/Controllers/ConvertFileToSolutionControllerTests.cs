@@ -53,20 +53,105 @@ namespace ApiForge.Tests.Controllers
 
             var result = await controller.Post(Path, null);
 
-            var fileResult = Assert.IsType<FileContentResult>(result);
-            Assert.Equal("application/zip", fileResult.ContentType);
-            Assert.Equal($"{generator.Solution.Name}.zip", fileResult.FileDownloadName);
-
-            // Verify zip content contains the generated file
-            using var ms = new MemoryStream(fileResult.FileContents);
-            using var archive = new ZipArchive(ms, ZipArchiveMode.Read);
-            var entry = archive.GetEntry(generator.Solution.Files[0].RelativePath);
-            Assert.NotNull(entry);
-            var entryNonNull = entry!;
-            using var reader = new StreamReader(entryNonNull.Open(), Encoding.UTF8);
-            var text = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
-            Assert.Equal(generator.Solution.Files[0].Content, text);
+            var okObject = Assert.IsType<OkObjectResult>(result);
+            Assert.NotNull(okObject.Value);
+            var filePathProperty = okObject.Value.GetType().GetProperty("filePath");
+            Assert.NotNull(filePathProperty);
+            var filePath = filePathProperty.GetValue(okObject.Value) as string;
+            Assert.False(string.IsNullOrEmpty(filePath));
         }
+
+        [Fact]
+        public async Task Post_Returns_BadRequest_When_FileNotFound()
+        {
+            var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator());
+
+            var result = await controller.Post("this-file-does-not-exist.openapi", null);
+
+            var bad = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Contains("File not found", bad.Value?.ToString() ?? string.Empty);
+        }
+
+        [Fact]
+        public async Task Post_Returns_BadRequest_When_CreateFormFile_ThrowsIOException()
+        {
+            var temp = System.IO.Path.GetTempFileName();
+            try
+            {
+                System.IO.File.WriteAllText(temp, "data");
+                // Open exclusive lock to cause File.OpenRead in CreateFormFileFromPathAsync to fail with IOException
+                using var lockStream = new System.IO.FileStream(temp, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.None);
+
+                var controller = new ConvertFileToSolutionController(new FakeApiForgeGenerator());
+
+                var result = await controller.Post(temp, null);
+
+                var bad = Assert.IsType<BadRequestObjectResult>(result);
+                Assert.Contains("Invalid file", bad.Value?.ToString() ?? string.Empty);
+            }
+            finally
+            {
+                try { System.IO.File.Delete(temp); } catch { }
+            }
+        }
+
+        [Fact]
+        public async Task Post_Returns_BadRequest_When_File_Is_Empty()
+        {
+            var temp = System.IO.Path.GetTempFileName();
+            try
+            {
+                // ensure zero length
+                System.IO.File.WriteAllBytes(temp, System.Array.Empty<byte>());
+
+                var mockGen = new Moq.Mock<IApiForgeGenerator>();
+                var controller = new ConvertFileToSolutionController(mockGen.Object);
+
+                var result = await controller.Post(temp, null);
+
+                var bad = Assert.IsType<BadRequestObjectResult>(result);
+                Assert.Contains("Upload an OpenAPI file", bad.Value?.ToString() ?? string.Empty);
+
+                mockGen.Verify(g => g.GenerateZipAsync(Moq.It.IsAny<System.IO.Stream>(), Moq.It.IsAny<ApiForge.Domain.Enums.ArchitectureStyle?>()), Moq.Times.Never);
+            }
+            finally
+            {
+                try { System.IO.File.Delete(temp); } catch { }
+            }
+        }
+
+        [Fact]
+        public async Task Post_Passes_ArchitectureOverride_To_Generator_When_Explicit()
+        {
+            var temp = System.IO.Path.GetTempFileName();
+            try
+            {
+                System.IO.File.WriteAllText(temp, "content");
+
+                var returned = new ApiForge.Domain.GeneratedApiSolution.GeneratedZipArchive { Name = "X", Content = new byte[] { 1, 2, 3 } };
+                ApiForge.Domain.Enums.ArchitectureStyle? captured = null;
+
+                var mockGen = new Moq.Mock<IApiForgeGenerator>();
+                mockGen.Setup(g => g.GenerateZipAsync(Moq.It.IsAny<System.IO.Stream>(), Moq.It.IsAny<ApiForge.Domain.Enums.ArchitectureStyle?>()))
+                       .Callback<System.IO.Stream, ApiForge.Domain.Enums.ArchitectureStyle?>((s, a) => captured = a)
+                       .Returns(System.Threading.Tasks.Task.FromResult(returned));
+
+                var controller = new ConvertFileToSolutionController(mockGen.Object);
+
+                var result = await controller.Post(temp, "clean");
+
+                var ok = Assert.IsType<OkObjectResult>(result);
+                Assert.NotNull(ok.Value);
+                Assert.Equal(ApiForge.Domain.Enums.ArchitectureStyle.Clean, captured);
+
+                mockGen.Verify(g => g.GenerateZipAsync(Moq.It.IsAny<System.IO.Stream>(), Moq.It.IsAny<ApiForge.Domain.Enums.ArchitectureStyle?>()), Moq.Times.Once);
+            }
+            finally
+            {
+                try { System.IO.File.Delete(temp); } catch { }
+            }
+        }
+
 
         private class FakeApiForgeGenerator : IApiForgeGenerator
         {
