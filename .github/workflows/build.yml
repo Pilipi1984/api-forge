@@ -2,7 +2,7 @@ name: SonarQube
 on:
   push:
     branches:
-      - master
+      [master,main]
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -40,9 +40,22 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: powershell
+        shell: pwsh
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Pilipi1984_api-forge" /o:"pilipi1984" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+          & "${{ runner.temp }}\scanner\dotnet-sonarscanner" begin `
+            /k:"Pilipi1984_api-forge" /o:"pilipi1984" `
+            /d:sonar.token="$env:SONAR_TOKEN" `
+            /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/*.coveragexml" `
+            /d:sonar.coverage.exclusions="ApiForge.Tests/**"
+
           dotnet build ApiForge.sln --no-incremental
-          dotnet test ApiForge.sln --no-build --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+          dotnet test --solution ApiForge.sln --no-build `
+            --coverage --coverage-output-format xml --coverage-output coverage.coveragexml `
+            --results-directory TestResults
+          if ($LASTEXITCODE -ne 0) { throw "dotnet test falló" }
+
+          $reports = Get-ChildItem -Recurse -Filter *.coveragexml -Path TestResults
+          if (-not $reports) { throw "No se generó el informe de cobertura" }
+
+          & "${{ runner.temp }}\scanner\dotnet-sonarscanner" end /d:sonar.token="$env:SONAR_TOKEN"
