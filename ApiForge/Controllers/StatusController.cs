@@ -1,10 +1,7 @@
 ﻿using ApiForge.ApplicationCore.DTOs.Responses;
 using ApiForge.ApplicationCore.Enums;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ApiForge.Api.Controllers
 {

@@ -26,7 +26,7 @@ builder.Services.AddApiVersioning(options =>
 
 builder.Services.AddScoped<IOpenApiParser, OpenApiParser>();
 builder.Services.AddScoped<ICodeGenerator, CodeGenerator>();
-builder.Services.AddScoped<ApiForgeGenerator>();
+builder.Services.AddScoped<IApiForgeGenerator, ApiForgeGenerator>();
 
 var app = builder.Build();
 

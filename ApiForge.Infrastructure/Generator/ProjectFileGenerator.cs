@@ -12,6 +12,7 @@ namespace ApiForge.Infrastructure.Generator
     {
         private const string TargetFramework = "net10.0";
         private const string EndProject = "EndProject";
+        private const string CsprojExtension = ".csproj";
 
         /// <summary>
         /// Generates the .csproj files for the Domain, Application, Infrastructure, and Client projects based on the provided root namespace.
@@ -20,27 +21,27 @@ namespace ApiForge.Infrastructure.Generator
         /// <returns>Returns the list of generated project files.</returns>
         public static List<GeneratedFile> GenerateProjectFiles(ProjectNamespaces ns)
         {
-            return new List<GeneratedFile>
-        {
+            return
+        [
             new()
             {
-                RelativePath = $"{ns.DomainNamespace}/{ns.DomainNamespace}.csproj",
+                RelativePath = $"{ns.DomainNamespace}/{ns.DomainNamespace}{CsprojExtension}",
                 Content = BuildCsproj(TargetFramework, ns.DomainNamespace)
             },
             new()
             {
-                RelativePath = $"{ns.ApplicationNamespace}/{ns.ApplicationNamespace}.csproj",
+                RelativePath = $"{ns.ApplicationNamespace}/{ns.ApplicationNamespace}{CsprojExtension}",
                 Content = BuildCsproj(TargetFramework, ns.ApplicationNamespace,
-                    projectReferences: [$@"..\{ns.DomainNamespace}\{ns.DomainNamespace}.csproj"])
+                    projectReferences: [$@"..\{ns.DomainNamespace}\{ns.DomainNamespace}{CsprojExtension}"])
             },
             new()
             {
-                RelativePath = $"{ns.InfrastructureNamespace}/{ns.InfrastructureNamespace}.csproj",
+                RelativePath = $"{ns.InfrastructureNamespace}/{ns.InfrastructureNamespace}{CsprojExtension}",
                 Content = BuildCsproj(TargetFramework, ns.InfrastructureNamespace,
                     projectReferences:
                     [
-                        $@"..\{ns.DomainNamespace}\{ns.DomainNamespace}.csproj",
-                        $@"..\{ns.ApplicationNamespace}\{ns.ApplicationNamespace}.csproj"
+                        $@"..\{ns.DomainNamespace}\{ns.DomainNamespace}{CsprojExtension}",
+                        $@"..\{ns.ApplicationNamespace}\{ns.ApplicationNamespace}{CsprojExtension}"
                     ],
                     packageReferences:
                     [
@@ -50,18 +51,18 @@ namespace ApiForge.Infrastructure.Generator
             },
             new()
             {
-                RelativePath = $"{ns.ClientNamespace}/{ns.ClientNamespace}.csproj",
+                RelativePath = $"{ns.ClientNamespace}/{ns.ClientNamespace}{CsprojExtension}",
                 Content = BuildCsproj(TargetFramework, ns.ClientNamespace,
                     projectReferences:
                     [
-                        $@"..\{ns.DomainNamespace}\{ns.DomainNamespace}.csproj",
-                        $@"..\{ns.ApplicationNamespace}\{ns.ApplicationNamespace}.csproj",
-                        $@"..\{ns.InfrastructureNamespace}\{ns.InfrastructureNamespace}.csproj"
+                        $@"..\{ns.DomainNamespace}\{ns.DomainNamespace}{CsprojExtension}",
+                        $@"..\{ns.ApplicationNamespace}\{ns.ApplicationNamespace}{CsprojExtension}",
+                        $@"..\{ns.InfrastructureNamespace}\{ns.InfrastructureNamespace}{CsprojExtension}"
                     ],
                     packageReferences: [("Microsoft.Extensions.DependencyInjection", "9.0.0")],
                     outputType: "Exe")
             }
-        };
+        ];
         }
 
         public static GeneratedFile GenerateSolutionFile(ProjectNamespaces ns)
@@ -75,13 +76,13 @@ namespace ApiForge.Infrastructure.Generator
             var sb = new StringBuilder();
             sb.AppendLine();
             sb.AppendLine("Microsoft Visual Studio Solution File, Format Version 12.00");
-            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.DomainNamespace}\", \"{ns.DomainNamespace}\\{ns.DomainNamespace}.csproj\", \"{domainGuid}\"");
+            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.DomainNamespace}\", \"{ns.DomainNamespace}\\{ns.DomainNamespace}{CsprojExtension}\", \"{domainGuid}\"");
             sb.AppendLine(EndProject);
-            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.ApplicationNamespace}\", \"{ns.ApplicationNamespace}\\{ns.ApplicationNamespace}.csproj\", \"{applicationGuid}\"");
+            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.ApplicationNamespace}\", \"{ns.ApplicationNamespace}\\{ns.ApplicationNamespace}{CsprojExtension}\", \"{applicationGuid}\"");
             sb.AppendLine(EndProject);
-            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.InfrastructureNamespace}\", \"{ns.InfrastructureNamespace}\\{ns.InfrastructureNamespace}.csproj\", \"{infrastructureGuid}\"");
+            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.InfrastructureNamespace}\", \"{ns.InfrastructureNamespace}\\{ns.InfrastructureNamespace}{CsprojExtension}\", \"{infrastructureGuid}\"");
             sb.AppendLine(EndProject);
-            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.ClientNamespace}\", \"{ns.ClientNamespace}\\{ns.ClientNamespace}.csproj\", \"{clientGuid}\"");
+            sb.AppendLine($"Project(\"{projectTypeGuid}\") = \"{ns.ClientNamespace}\", \"{ns.ClientNamespace}\\{ns.ClientNamespace}{CsprojExtension}\", \"{clientGuid}\"");
             sb.AppendLine(EndProject);
             sb.AppendLine("Global");
             sb.AppendLine("\tGlobalSection(SolutionConfigurationPlatforms) = preSolution");

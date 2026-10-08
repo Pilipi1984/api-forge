@@ -1,5 +1,7 @@
 ﻿using ApiForge.Application.Interfaces;
+using ApiForge.ApplicationCore.DTOs.Responses;
 using ApiForge.Domain.Enums;
+using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Infrastructure.Helpers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -30,14 +32,19 @@ namespace ApiForge.Api.Controllers
         [HttpPost]
         [RequestSizeLimit(MaxSpecSizeBytes)]
         [RequestFormLimits(MultipartBodyLengthLimit = MaxSpecSizeBytes)]
-        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequestObjectResult), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(string? path,
             [FromForm] string? architecture)
         {
-            if(string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
                 return BadRequest(new { error = "Invalid file path." });
+            }
+
+            if (!System.IO.File.Exists(path))
+            {
+                return BadRequest(new { error = $"File not found: {path}" });
             }
 
             IFormFile file;
@@ -73,13 +80,39 @@ namespace ApiForge.Api.Controllers
 
                 await using var stream = file.OpenReadStream();
                 var zip = await _generator.GenerateZipAsync(stream, architectureOverride);
-                
-                return File(zip.Content, "application/zip", $"{zip.Name}.zip");
+
+                var fileResult = DownloadFile(zip);
+                return Ok(new { filePath = fileResult });
             }
             catch (Exception ex)
             {
                 return BadRequest(new { error = $"Failed to generate solution: {ex.Message}" });
             }
+        }
+
+        private string DownloadFile(GeneratedZipArchive zip)
+        {
+            var filename = $"{zip.Name}.zip";
+            var downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+            var filePath = string.Empty;
+
+            try
+            {
+                // Ensure the Downloads folder exists and write the file there
+                if (!Directory.Exists(downloadsFolder))
+                {
+                    Directory.CreateDirectory(downloadsFolder);
+                }
+
+                filePath = Path.Combine(downloadsFolder, filename);
+                System.IO.File.WriteAllBytes(filePath, zip.Content);
+            }
+            catch
+            {
+                throw new IOException("Failed to save the generated file.");
+            }
+
+            return filePath;
         }
     }
 }

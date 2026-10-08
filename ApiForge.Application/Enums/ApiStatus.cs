@@ -15,6 +15,6 @@ namespace ApiForge.ApplicationCore.Enums
         /// <summary>
         /// The API has problems
         /// </summary>
-        NoOk
+        ERROR
     }
 }

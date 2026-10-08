@@ -64,7 +64,7 @@ namespace ApiForge.Tests.Controllers
             Assert.NotNull(entry);
             var entryNonNull = entry!;
             using var reader = new StreamReader(entryNonNull.Open(), Encoding.UTF8);
-            var text = await reader.ReadToEndAsync();
+            var text = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
             Assert.Equal(generator.Solution.Files[0].Content, text);
         }
 

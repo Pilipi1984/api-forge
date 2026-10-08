@@ -29,7 +29,7 @@ namespace ApiForge.Infrastructure.Generator
             sb.AppendLine();
             sb.AppendLine("using var provider = services.BuildServiceProvider();");
             sb.AppendLine();
-            sb.AppendLine("Console.WriteLine(\"Cliente de API generado y listo. Configura la BaseAddress real antes de usarlo.\");");
+            sb.AppendLine("Console.WriteLine(\"Api client generated and ready. Configure real BaseAddress real nefore use.\");");
 
             return new GeneratedFile
             {
