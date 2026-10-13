@@ -2,7 +2,6 @@ using ApiForge.Domain.Models;
 using ApiForge.Domain.Models.ApiParameters;
 using ApiForge.Domain.Models.Schema;
 using ApiForge.Infrastructure.Generator.Planning;
-using Xunit;
 
 namespace ApiForge.Tests.Planning
 {
@@ -15,20 +14,20 @@ namespace ApiForge.Tests.Planning
             {
                 Title = "T",
                 Version = "1",
-                Endpoints = new System.Collections.Generic.List<ApiEndpoint>
-                {
+                Endpoints =
+                [
                     new ApiEndpoint { Route = "/payments/{id}", HttpMethod = "GET", OperationId = "GetPayment" },
                     new ApiEndpoint { Route = "/payments", HttpMethod = "POST", OperationId = "CreatePayment" },
                     new ApiEndpoint { Route = "/users/{id}", HttpMethod = "GET", OperationId = "GetUser" }
-                }
+                ]
             };
 
             var plan = SolutionPlanner.CreatePlan(def, "Acme.Root");
 
             Assert.NotNull(plan);
             // Expect two groups: payments and users
-            Assert.Contains(true, plan.Groups.Select(g => g.GroupName == "Payments"));
-            Assert.Contains(true, plan.Groups.Select(g => g.GroupName == "Users"));
+            Assert.Contains(true, plan.Groups.Select(g => g.GroupName.Equals("Payments", StringComparison.InvariantCultureIgnoreCase)));
+            Assert.Contains(true, plan.Groups.Select(g => g.GroupName.Equals("Users", StringComparison.InvariantCultureIgnoreCase)));
         }
 
         [Fact]
@@ -38,21 +37,20 @@ namespace ApiForge.Tests.Planning
             {
                 Title = "T",
                 Version = "1",
-                Endpoints = new System.Collections.Generic.List<ApiEndpoint>
-                {
+                Endpoints =
+                [
                     new ApiEndpoint {
                         Route = "/orders/{orderId}",
                         HttpMethod = "PUT",
                         OperationId = "UpdateOrder",
-                        Parameters = new System.Collections.Generic.List<ApiParameter>
-                        {
+                        Parameters = [
                             new ApiPathParameter { Name = "orderId", Type = "Int32", Required = true, Location = Microsoft.OpenApi.ParameterLocation.Path },
                             new ApiQueryParameter { Name = "verbose", Type = "Boolean", Required = false, Location = Microsoft.OpenApi.ParameterLocation.Query }
-                        },
+                        ],
                         RequestBody = new ReferenceSchema { ReferenceName = "My.Company.Order", OpenApiType = "ref", ClrType = "Ref" },
                         Response = new PrimitiveSchema { OpenApiType = "primitive", ClrType = "String" }
                     }
-                }
+               ]
             };
 
             var plan = SolutionPlanner.CreatePlan(def, "Acme.Root");
@@ -62,8 +60,8 @@ namespace ApiForge.Tests.Planning
             var ep = group?.Endpoints[0];
             Assert.Equal("UpdateOrder", ep?.MethodName);
             Assert.Equal("string", ep?.ReturnType);
-            Assert.Contains(true, ep?.PathParameters.Select(p => p.Name == "orderId"));
-            Assert.Contains(true, ep?.QueryParameters.Select(p => p.Name == "verbose"));
+            Assert.True(ep?.PathParameters?.Any(p => p?.Name.Equals("orderId", StringComparison.InvariantCultureIgnoreCase) == true));
+            Assert.True(ep?.QueryParameters?.Any(p => p?.Name.Equals("verbose", StringComparison.InvariantCultureIgnoreCase) == true));
             Assert.NotNull(ep?.RequestBodyType);
             Assert.Contains("Order", ep.RequestBodyType);
         }

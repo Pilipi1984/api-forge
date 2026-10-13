@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace ApiForge.Tests.Sanity
 {
     public class SanityTests

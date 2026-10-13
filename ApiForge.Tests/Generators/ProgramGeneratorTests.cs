@@ -9,10 +9,10 @@ namespace ApiForge.Tests.Generators
         [Fact]
         public void Generate_Includes_ServiceRegistration_And_Usings()
         {
-            var conventions = ArchitectureConventions.For(ApiForge.Domain.Enums.ArchitectureStyle.Clean);
+            var conventions = ArchitectureConventions.For(Domain.Enums.ArchitectureStyle.Clean);
             var ns = ProjectNamespaces.From("Acme.Root", conventions);
 
-            var plan = new SolutionPlan { RootNamespace = "Acme.Root", Conventions = conventions, Style = ApiForge.Domain.Enums.ArchitectureStyle.Clean, Namespaces = ns, Groups = new System.Collections.Generic.List<ClientGroupPlan>() };
+            var plan = new SolutionPlan { RootNamespace = "Acme.Root", Conventions = conventions, Style = Domain.Enums.ArchitectureStyle.Clean, Namespaces = ns, Groups = [] };
 
             var file = ProgramGenerator.Generate(plan);
 

@@ -15,19 +15,15 @@ namespace ApiForge.Tests.Integration
             var generator = new CodeGenerator();
             var controller = new ConvertFileToSolutionController(new Generator.ApiForgeGenerator(parser, generator));
 
-            var path = @"..\..\..\Integration\TestFiles\test.yml";
+            var yaml = "openapi: 3.0.0\ninfo:\n  title: ET\n  version: 1.0.0\npaths: {}";
+            var file = TestHelpers.CreateFormFile(yaml);
 
-            var result = await controller.Post(path, "auto");
+            var result = await controller.Post(file, "auto");
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var json = System.Text.Json.JsonSerializer.Serialize(okResult.Value);
-            using var doc = System.Text.Json.JsonDocument.Parse(json);
-            var filePath = doc.RootElement.GetProperty("filePath").GetString();
-            Assert.False(string.IsNullOrWhiteSpace(filePath));
-            Assert.True(System.IO.File.Exists(filePath));
+            var fileResult = Assert.IsType<FileContentResult>(result);
+            Assert.Equal("application/zip", fileResult.ContentType);
 
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            using var ms = new MemoryStream(fileBytes);
+            using var ms = new MemoryStream(fileResult.FileContents);
             using var archive = new System.IO.Compression.ZipArchive(ms, System.IO.Compression.ZipArchiveMode.Read);
             Assert.Contains(true, archive.Entries.Select(e => !string.IsNullOrWhiteSpace(e.FullName)));
         }

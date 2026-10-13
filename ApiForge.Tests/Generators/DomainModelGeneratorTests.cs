@@ -21,8 +21,8 @@ namespace ApiForge.Tests.Generators
                 ]
             };
 
-            var conventions = Infrastructure.Generator.Planning.ArchitectureConventions.For(Domain.Enums.ArchitectureStyle.Clean);
-            var ns = Infrastructure.Generator.Planning.ProjectNamespaces.From("Root", conventions);
+            var conventions = ArchitectureConventions.For(Domain.Enums.ArchitectureStyle.Clean);
+            var ns = ProjectNamespaces.From("Root", conventions);
 
             var files = DomainModelGenerator.Generate(definition, ns);
 
@@ -51,8 +51,8 @@ namespace ApiForge.Tests.Generators
                 ]
             };
 
-            var conventions = ApiForge.Infrastructure.Generator.Planning.ArchitectureConventions.For(ApiForge.Domain.Enums.ArchitectureStyle.Clean);
-            var ns = ApiForge.Infrastructure.Generator.Planning.ProjectNamespaces.From("Root", conventions);
+            var conventions = ArchitectureConventions.For(Domain.Enums.ArchitectureStyle.Clean);
+            var ns = ProjectNamespaces.From("Root", conventions);
 
             var files = DomainModelGenerator.Generate(definition, ns);
 

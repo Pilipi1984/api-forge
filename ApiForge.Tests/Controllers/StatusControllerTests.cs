@@ -1,10 +1,8 @@
 using ApiForge.Api.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 using ApiForge.ApplicationCore.DTOs.Responses;
 using ApiForge.ApplicationCore.Enums;
-using System;
 
 
 namespace ApiForge.Tests.Controllers
@@ -17,7 +15,7 @@ namespace ApiForge.Tests.Controllers
             var controller = new StatusController();
 
             // Provide an HttpContext with a minimal IServiceProvider that returns an IWebHostEnvironment
-            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            var services = new ServiceCollection();
             services.AddSingleton<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>(new TestEnv { EnvironmentName = "Testing" });
             var provider = services.BuildServiceProvider();
 
@@ -35,7 +33,7 @@ namespace ApiForge.Tests.Controllers
         {
             var controller = new StatusController();
 
-            ServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            ServiceCollection services = new();
             services.AddSingleton<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>(new TestEnv { EnvironmentName = "Testing" });
             var provider = services.BuildServiceProvider();
 
@@ -50,7 +48,7 @@ namespace ApiForge.Tests.Controllers
 
             // Verify status and environment are set as expected
             Assert.Equal(ApiStatus.OK, response.Status);
-            Assert.Equal("Testing", response.Environment);
+            Assert.Equal("Testing", response.Environment, true);
 
             // Version should be present (either numeric or "unknown")
             Assert.False(string.IsNullOrWhiteSpace(response.Version));
@@ -65,7 +63,7 @@ namespace ApiForge.Tests.Controllers
         {
             var controller = new StatusController();
 
-            var provider = new Microsoft.Extensions.DependencyInjection.ServiceCollection().BuildServiceProvider();
+            var provider = new ServiceCollection().BuildServiceProvider();
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext { RequestServices = provider }
@@ -73,7 +71,6 @@ namespace ApiForge.Tests.Controllers
 
             Assert.Throws<InvalidOperationException>(() => controller.Get());
         }
-
     }
 
     internal class TestEnv : Microsoft.AspNetCore.Hosting.IWebHostEnvironment

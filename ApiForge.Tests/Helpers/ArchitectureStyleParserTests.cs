@@ -1,6 +1,5 @@
 using ApiForge.Domain.Enums;
 using ApiForge.Infrastructure.Helpers;
-using Xunit;
 
 namespace ApiForge.Tests.Helpers
 {

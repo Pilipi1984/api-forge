@@ -1,8 +1,5 @@
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Generator.Planning;
-using ApiForge.Domain.GeneratedApiSolution;
-using Xunit;
-using System.Collections.Generic;
 
 namespace ApiForge.Tests.Generators
 {
@@ -19,16 +16,16 @@ namespace ApiForge.Tests.Generators
                 GroupName = "Payments",
                 InterfaceName = conventions.InterfaceName("Payments"),
                 ClassName = conventions.ClassName("Payments"),
-                Endpoints = new List<EndpointPlan>()
+                Endpoints = []
             };
 
             var plan = new SolutionPlan
             {
                 RootNamespace = "Acme.Root",
-                Style = ApiForge.Domain.Enums.ArchitectureStyle.Clean,
+                Style = Domain.Enums.ArchitectureStyle.Clean,
                 Conventions = conventions,
                 Namespaces = ns,
-                Groups = new List<ClientGroupPlan> { group }
+                Groups = [group]
             };
 
             var file = DependencyInjectionGenerator.Generate(plan);

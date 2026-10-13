@@ -7,11 +7,11 @@ namespace ApiForge.Tests.Generators
         public static IEnumerable<object[]> RootsAndStyles()
         {
             object[] objects = ["Acme.App", Domain.Enums.ArchitectureStyle.Hexagonal];
-            return new[]
-                    {
-            ["TestRoot", Domain.Enums.ArchitectureStyle.Clean],
-            objects
-        };
+            return
+                [
+                    ["TestRoot", Domain.Enums.ArchitectureStyle.Clean],
+                    objects
+                ];
         }
 
         [Theory]

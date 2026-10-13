@@ -3,7 +3,6 @@ using ApiForge.Domain.Enums;
 using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Domain.Models;
 using ApiForge.Generator;
-using Xunit;
 using System.IO.Compression;
 using System.Text;
 

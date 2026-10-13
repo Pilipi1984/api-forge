@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.OpenApi;
+﻿using Microsoft.OpenApi;
 using ApiForge.Domain.Models.ApiParameters;
-using Xunit;
 
 namespace ApiForge.Tests.Models.ApiParameters
 {

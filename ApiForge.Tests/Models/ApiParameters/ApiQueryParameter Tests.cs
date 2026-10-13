@@ -1,5 +1,4 @@
-﻿using Xunit;
-using ApiForge.Domain.Models.ApiParameters;
+﻿using ApiForge.Domain.Models.ApiParameters;
 using Microsoft.OpenApi;
 
 #nullable enable
