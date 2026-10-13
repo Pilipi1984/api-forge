@@ -1,18 +1,15 @@
+using ApiForge.Domain.Enums;
 using ApiForge.Infrastructure.Generator;
 
 namespace ApiForge.Tests.Generators
 {
     public class ProjectFileGeneratorTests
     {
-        public static IEnumerable<object[]> RootsAndStyles()
+        public static TheoryData<string, ArchitectureStyle> RootsAndStyles() => new()
         {
-            object[] objects = ["Acme.App", Domain.Enums.ArchitectureStyle.Hexagonal];
-            return
-                [
-                    ["TestRoot", Domain.Enums.ArchitectureStyle.Clean],
-                    objects
-                ];
-        }
+            { "TestRoot", ArchitectureStyle.Clean },
+            { "Acme.App", ArchitectureStyle.Hexagonal }
+        };
 
         [Theory]
         [MemberData(nameof(RootsAndStyles))]

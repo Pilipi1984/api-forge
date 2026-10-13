@@ -4,9 +4,9 @@ using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
 using Asp.Versioning;
 
-namespace ApiForge
+namespace ApiForge.Api
 {
-    public partial class Program
+    public static partial class Program
     {
         private static async Task Main(string[] args)
         {
