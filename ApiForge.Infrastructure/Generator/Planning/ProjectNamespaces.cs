@@ -64,7 +64,7 @@ namespace ApiForge.Infrastructure.Generator.Planning
         /// This property sanitizes the root namespace for use in method names, and delegates
         /// the actual naming convention (e.g. "AddXClients" vs "AddXAdapters") to Conventions.
         /// </summary>
-        public string ClientsExtensionMethodName => Conventions.ExtensionMethodName(NameHelper.ToPascalCase(RootNamespace));
+        public string ClientsExtensionMethodName => Conventions.ExtensionMethodName(NameHelper.ToPascalCase(RootNamespace).Replace(".", ""));
 
         /// <summary>
         /// Generates a new instance of <see cref="ProjectNamespaces"/> with the specified root namespace and architecture conventions.

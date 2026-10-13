@@ -24,7 +24,7 @@ namespace ApiForge.Infrastructure.Generator
 
             foreach (var model in definition.Models)
             {
-                var name = model.Name.Contains(ns.DomainNamespace) ? model.Name.Substring(ns.DomainNamespace.Length + 2) : model.Name;
+                var name = model.Name.Contains(ns.DomainNamespace) ? model.Name[(ns.DomainNamespace.Length + 1)..] : model.Name;
 
                 var className = NameHelper.ToPascalCase(name);
                 var usedNames = new HashSet<string>(StringComparer.Ordinal) { className };

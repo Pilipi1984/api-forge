@@ -1,11 +1,12 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ApiForge.Infrastructure.Helpers
 {
     /// <summary>
     /// Provides helper methods for converting strings to valid C# identifiers, including PascalCase and camelCase conversions, and handling reserved words.
     /// </summary>
-    public static class NameHelper
+    public static partial class NameHelper
     {
         private static readonly char[] Separators = { ' ', '/', '{', '}' };
 
@@ -139,7 +140,8 @@ namespace ApiForge.Infrastructure.Helpers
         /// <returns>Returns the string converted to a valid C# identifier.</returns>
         public static string ToValidIdentifier(string? value, string fallback = "value")
         {
-            var candidate = ToCamelCase(value);
+            var candidate = InvalidCharactersRegex().Replace(value ?? "", " ");
+            candidate = ToCamelCase(candidate);
             if (string.IsNullOrEmpty(candidate)) 
             { 
                 return fallback;
@@ -147,5 +149,8 @@ namespace ApiForge.Infrastructure.Helpers
 
             return ReservedWords.Contains(candidate) ? "@" + candidate : candidate;
         }
+
+        [GeneratedRegex("[^A-Za-z0-9_]+")]
+        private static partial Regex InvalidCharactersRegex();
     }
 }

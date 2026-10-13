@@ -114,12 +114,9 @@ namespace ApiForge.Infrastructure.Generator
             sb.AppendLine("\t\t\tusing var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);");
             sb.AppendLine("\t\t\tresponse.EnsureSuccessStatusCode();");
             sb.AppendLine();
-
-            if (!endpoint.ReturnType.Equals("object", StringComparison.InvariantCultureIgnoreCase))
-            {
-                sb.AppendLine($"\t\t\tvar result = await response.Content.ReadFromJsonAsync<{endpoint.ReturnType}>(cancellationToken: cancellationToken).ConfigureAwait(false);");
-                sb.AppendLine();
-            }
+            
+            sb.AppendLine($"\t\t\tvar result = await response.Content.ReadFromJsonAsync<{endpoint.ReturnType}>(cancellationToken: cancellationToken).ConfigureAwait(false);");
+            sb.AppendLine();
 
             sb.AppendLine("\t\t\treturn result!;");
 
