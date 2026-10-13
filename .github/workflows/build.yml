@@ -37,25 +37,34 @@ jobs:
         run: |
           New-Item -Path ${{ runner.temp }}\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path ${{ runner.temp }}\scanner
+      - name: Install dotnet-coverage
+        shell: pwsh
+        run: |
+          dotnet tool update dotnet-coverage --tool-path "${{ runner.temp }}\coverage-tool"
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: pwsh
         run: |
+          $coverageFile = Join-Path $env:GITHUB_WORKSPACE "TestResults\coverage.xml"
+
           & "${{ runner.temp }}\scanner\dotnet-sonarscanner" begin `
             /k:"Pilipi1984_api-forge" /o:"pilipi1984" `
             /d:sonar.token="$env:SONAR_TOKEN" `
-            /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/*.coveragexml" `
+            /d:sonar.projectBaseDir="$env:GITHUB_WORKSPACE" `
+            /d:sonar.cs.vscoveragexml.reportsPaths="$coverageFile" `
             /d:sonar.coverage.exclusions="ApiForge.Tests/**"
 
           dotnet build ApiForge.sln --no-incremental
 
-          dotnet test --solution ApiForge.sln --no-build `
-            --coverage --coverage-output-format xml --coverage-output coverage.coveragexml `
-            --results-directory TestResults
+          & "${{ runner.temp }}\coverage-tool\dotnet-coverage" collect `
+            "dotnet test --solution ApiForge.sln --no-build" `
+            -f xml -o "$coverageFile"
           if ($LASTEXITCODE -ne 0) { throw "dotnet test falló" }
 
-          $reports = Get-ChildItem -Recurse -Filter *.coveragexml -Path TestResults
-          if (-not $reports) { throw "No se generó el informe de cobertura" }
+          if (-not (Test-Path $coverageFile)) { throw "No se generó el informe de cobertura" }
+          if ((Get-Content $coverageFile -Raw) -match '<results\s*/>') {
+            throw "El informe de cobertura está vacío (<results />)"
+          }
 
           & "${{ runner.temp }}\scanner\dotnet-sonarscanner" end /d:sonar.token="$env:SONAR_TOKEN"

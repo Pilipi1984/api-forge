@@ -4,39 +4,42 @@ using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
 using Asp.Versioning;
 
-public partial class Program
+namespace ApiForge
 {
-    private static async Task Main(string[] args)
+    public partial class Program
     {
-        var builder = WebApplication.CreateBuilder(args);
-
-        builder.Services.AddControllers();
-
-        builder.Services.AddApiVersioning(options =>
+        private static async Task Main(string[] args)
         {
-            options.ReportApiVersions = true;
-            options.ApiVersionReader = new UrlSegmentApiVersionReader();
-        })
-        .AddMvc()
-        .AddApiExplorer(options =>
-        {
-            options.GroupNameFormat = "'v'VVV";
-            options.AssumeDefaultVersionWhenUnspecified = true;
-            options.SubstituteApiVersionInUrl = true;
-        });
+            var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddScoped<IOpenApiParser, OpenApiParser>();
-        builder.Services.AddScoped<ICodeGenerator, CodeGenerator>();
-        builder.Services.AddScoped<IApiForgeGenerator, ApiForgeGenerator>();
+            builder.Services.AddControllers();
 
-        var app = builder.Build();
+            builder.Services.AddApiVersioning(options =>
+            {
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            })
+            .AddMvc()
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.SubstituteApiVersionInUrl = true;
+            });
 
-        app.UseDefaultFiles();
-        app.UseStaticFiles();
+            builder.Services.AddScoped<IOpenApiParser, OpenApiParser>();
+            builder.Services.AddScoped<ICodeGenerator, CodeGenerator>();
+            builder.Services.AddScoped<IApiForgeGenerator, ApiForgeGenerator>();
 
-        app.UseHttpsRedirection();
-        app.UseAuthorization();
-        app.MapControllers();
-        await app.RunAsync();
+            var app = builder.Build();
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
+            app.UseHttpsRedirection();
+            app.UseAuthorization();
+            app.MapControllers();
+            await app.RunAsync();
+        }
     }
 }
