@@ -18,10 +18,9 @@ COPY ApiForge.Tests/ ApiForge.Tests/
 COPY README.md ./
 
 RUN dotnet restore ApiForge.sln \
- && dotnet build ApiForge.sln -c Release --no-restore
-
+ && dotnet build ApiForge.sln -c Release --no-restore \
 # Tests + cobertura (falla el build si fallan los tests)
-RUN dotnet tool install --global dotnet-coverage \
+ && dotnet tool install --global dotnet-coverage \
  && dotnet tool install --global dotnet-reportgenerator-globaltool \
  && dotnet-coverage collect \
       "dotnet test --solution ApiForge.sln -c Release --no-build" \
