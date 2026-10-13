@@ -2,7 +2,7 @@
 
 namespace ApiForge.Api.Controllers
 {
-    public class FormFileExtensions
+    public static class FormFileExtensions
     {
         public static async Task<IFormFile> CreateFormFileFromPathAsync(string path, string formFieldName = "file")
         {

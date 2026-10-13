@@ -11,7 +11,7 @@ namespace ApiForge.Tests.Models.ApiParameters
             // Arrange & Act
             // Use Activator to bypass 'required' member compile-time enforcement so we can test
             // the constructor behavior that sets Location to Header.
-            var parameter = (ApiHeaderParameter)Activator.CreateInstance(typeof(ApiHeaderParameter))!;
+            var parameter = Activator.CreateInstance<ApiHeaderParameter>()!;
 
             // Assert
             Assert.Equal(ParameterLocation.Header, parameter.Location);
