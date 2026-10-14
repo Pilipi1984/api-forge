@@ -4,7 +4,8 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-    <SignAssembly>True</SignAssembly>
+    <IsPackable>True</IsPackable>
+    <Description>ApiForge.Generator is a library for generating typed C# client solutions from OpenAPI specifications.</Description>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -20,6 +21,7 @@
 		<PackageProjectUrl>https://github.com/Pilipi1984/api-forge</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<AssemblyOriginatorKeyFile>C:\Users\pilip\source\PrivateKeys\sgKey.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -30,12 +32,5 @@
 	
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<PackageReference Include="MinVer" Version="8.0.0">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 	</ItemGroup>
 </Project>

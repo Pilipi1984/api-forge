@@ -4,7 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <SignAssembly>True</SignAssembly>
+    <IsPackable>True</IsPackable>
+    <Description>ApiForge.Domain is the core library of the ApiForge application, providing essential domain models and services for building and managing APIs.</Description>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,7 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <SignAssembly>True</SignAssembly>
+    <IsPackable>True</IsPackable>
+    <Description>ApiForge.ApplicationCore is the core library of the ApiForge application, providing essential functionality and services for building and managing APIs.</Description>
   </PropertyGroup>
 
   <ItemGroup>

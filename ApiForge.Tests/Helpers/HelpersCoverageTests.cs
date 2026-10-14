@@ -6,20 +6,37 @@ using System.Text.Json.Nodes;
 
 namespace ApiForge.Tests.Helpers
 {
+    /// <summary>
+    /// Tests for the OpenApiHelper class.
+    /// </summary>
     public class OpenApiHelperTests
     {
+        /// <summary>
+        /// Tests that GetNullable returns false when the schema is null.
+        /// </summary>
         [Fact]
         public void GetNullable_NullSchema_ReturnsFalse() =>
             Assert.False(OpenApiHelper.GetNullable(null!));
 
+        /// <summary>
+        /// Tests that GetNullable returns true when the schema type is null.
+        /// </summary>
         [Fact]
         public void GetNullable_TypeNull_ReturnsTrue() =>
             Assert.True(OpenApiHelper.GetNullable(new OpenApiSchema { Type = JsonSchemaType.Null }));
 
+        /// <summary>
+        /// Tests that GetNullable returns false when the schema has no keywords.
+        /// </summary>
         [Fact]
         public void GetNullable_NoKeywords_ReturnsFalse() =>
             Assert.False(OpenApiHelper.GetNullable(new OpenApiSchema { Type = JsonSchemaType.String }));
 
+        /// <summary>
+        /// Tests that GetNullable returns the correct value based on the "nullable" keyword in the schema.
+        /// </summary>
+        /// <param name="raw"></param>
+        /// <param name="expected"></param>
         [Theory]
         [InlineData("true", true)]
         [InlineData("1", true)]
@@ -37,8 +54,18 @@ namespace ApiForge.Tests.Helpers
         }
     }
 
+    /// <summary>
+    /// Tests for the GeneratedFilePathHelper class.
+    /// </summary>
     public class GeneratedFilePathHelperTests
     {
+        /// <summary>
+        /// Tests that BuildRelativePath returns the expected relative path based on the project namespace, full namespace, and file name.
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="full"></param>
+        /// <param name="file"></param>
+        /// <param name="expected"></param>
         [Theory]
         [InlineData("Acme.Domain", "Acme.Domain", "A.cs", "Acme.Domain/A.cs")]
         [InlineData("Acme.Domain", "Acme.Domain.Models", "A.cs", "Acme.Domain/Models/A.cs")]
@@ -48,11 +75,18 @@ namespace ApiForge.Tests.Helpers
             Assert.Equal(expected, GeneratedFilePathHelper.BuildRelativePath(project, full, file));
     }
 
+    /// <summary>
+    /// Tests for the QualifiedNameResolver class.
+    /// </summary>
     public class QualifiedNameResolverExtraTests
     {
+        /// <summary>
+        /// Tests that Resolve returns "Unnamed" when the input is blank or contains only dots.
+        /// </summary>
+        /// <param name="input"></param>
         [Theory]
         [InlineData("   ")]
-        [InlineData("...")]
+        [InlineData("...")]        
         public void Resolve_BlankOrOnlyDots_ReturnsUnnamed(string input)
         {
             var res = QualifiedNameResolver.Resolve(input);
@@ -61,6 +95,9 @@ namespace ApiForge.Tests.Helpers
             Assert.Empty(res.NamespaceSegments);
         }
 
+        /// <summary>
+        /// Tests that Resolve correctly resolves a single segment name with no namespace.
+        /// </summary>
         [Fact]
         public void Resolve_SingleSegment_HasNoNamespace()
         {
@@ -70,14 +107,23 @@ namespace ApiForge.Tests.Helpers
             Assert.Empty(res.NamespaceSegments);
         }
 
+        /// <summary>
+        /// Tests that Resolve correctly resolves a name with multiple segments, extracting the class name and namespace segments.
+        /// </summary>
         [Fact]
         public void BuildNamespace_AppendsSegments() =>
             Assert.Equal("Root.Models.A.B", QualifiedNameResolver.BuildNamespace("Root.Models", ["A", "B"]));
 
+        /// <summary>
+        /// Tests that BuildNamespace returns the base namespace when no additional segments are provided.
+        /// </summary>
         [Fact]
         public void BuildNamespace_NoSegments_ReturnsBase() =>
             Assert.Equal("Root.Models", QualifiedNameResolver.BuildNamespace("Root.Models", []));
 
+        /// <summary>
+        /// Tests that BuildFolderPath correctly constructs a folder path from the provided namespace segments.
+        /// </summary>
         [Fact]
         public void BuildFolderPath_Works()
         {
@@ -86,6 +132,9 @@ namespace ApiForge.Tests.Helpers
         }
     }
 
+    /// <summary>
+    /// Tests for the EndpointSignatureHelper class.
+    /// </summary>
     public class EndpointSignatureHelperTests
     {
         private static ParameterPlan P(ApiParameter source, string type) =>
@@ -108,10 +157,16 @@ namespace ApiForge.Tests.Helpers
                 RequestBodyParameterName = bodyType is null ? null : "request"
             };
 
+        /// <summary>
+        /// Tests that BuildParameterList returns an empty string when there are no parameters in the endpoint plan.
+        /// </summary>
         [Fact]
         public void BuildParameterList_NoParameters_ReturnsEmpty() =>
             Assert.Equal(string.Empty, EndpointSignatureHelper.BuildParameterList(Plan()));
 
+        /// <summary>
+        /// Tests that BuildParameterList correctly orders parameters from path, query, header, and body in the resulting parameter list string.
+        /// </summary>
         [Fact]
         public void BuildParameterList_OrdersPathQueryHeaderBody()
         {
