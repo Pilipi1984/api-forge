@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApiForge.Application\ApiForge.ApplicationCore.csproj" />
+    <ProjectReference Include="..\ApiForge.Application\ApiForge.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

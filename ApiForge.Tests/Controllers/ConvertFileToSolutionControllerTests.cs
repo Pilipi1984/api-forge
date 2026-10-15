@@ -9,8 +9,14 @@ using System.Text;
 
 namespace ApiForge.Tests.Controllers
 {
+    /// <summary>
+    /// Tests for the ConvertFileToSolutionController
+    /// </summary>
     public class ConvertFileToSolutionControllerTests
     {
+        /// <summary>
+        /// Tests that the Post method returns a BadRequest result when no file is provided.
+        /// </summary>
         [Fact]
         public async Task Post_Returns_BadRequest_When_NoFile()
         {
@@ -22,6 +28,9 @@ namespace ApiForge.Tests.Controllers
             Assert.NotNull(bad.Value);
         }
 
+        /// <summary>
+        /// Tests that the Post method returns a BadRequest result when the parser throws an exception.
+        /// </summary>
         [Fact]
         public async Task Post_Returns_BadRequest_When_ParserThrows()
         {
@@ -34,6 +43,9 @@ namespace ApiForge.Tests.Controllers
             Assert.Contains("Failed to generate solution", bad.Value?.ToString() ?? string.Empty);
         }
 
+        /// <summary>
+        /// Tests that the Post method returns a BadRequest result when an invalid architecture value is provided.
+        /// </summary>
         [Fact]
         public async Task Post_Returns_BadRequest_When_InvalidArchitecture()
         {
@@ -46,6 +58,9 @@ namespace ApiForge.Tests.Controllers
             Assert.Contains("Unrecognized architecture value", bad.Value?.ToString() ?? string.Empty);
         }
 
+        /// <summary>
+        /// Tests that the Post method returns a FileContentResult with a zip file when the generation is successful.
+        /// </summary>
         [Fact]
         public async Task Post_Returns_ZipFile_OnSuccess()
         {
@@ -70,23 +85,36 @@ namespace ApiForge.Tests.Controllers
             Assert.Equal(generator.Solution.Files[0].Content, text);
         }
 
-        private class FakeApiForgeGenerator : IApiForgeGenerator
+        /// <summary>
+        /// A fake implementation of IApiForgeGenerator for testing purposes. It can be configured to return a predefined solution or throw an exception to simulate failure scenarios.
+        /// </summary>
+        /// <param name="solution">The predefined solution to return.</param>
+        /// <param name="shouldThrow">Indicates whether to throw an exception.</param>
+        private class FakeApiForgeGenerator(GeneratedSolution? solution = null, bool shouldThrow = false) : IApiForgeGenerator
         {
-            private readonly GeneratedSolution? _solution;
-            private readonly bool _shouldThrow;
+            private readonly GeneratedSolution? _solution = solution;
+            private readonly bool _shouldThrow = shouldThrow;
 
-            public FakeApiForgeGenerator(GeneratedSolution? solution = null, bool shouldThrow = false)
-            {
-                _solution = solution;
-                _shouldThrow = shouldThrow;
-            }
-
+            /// <summary>
+            /// Generates a solution from the provided OpenAPI specification stream. If configured to throw, it will throw an InvalidOperationException to simulate a failure scenario.
+            /// </summary>
+            /// <param name="openApiSpec">The OpenAPI specification stream.</param>
+            /// <param name="architectureOverride">The architecture override.</param>
+            /// <returns>The generated solution.</returns>
+            /// <exception cref="InvalidOperationException">Thrown when the generator is configured to throw an exception.</exception>
             public Task<GeneratedSolution> GenerateAsync(Stream openApiSpec, ApiForge.Domain.Enums.ArchitectureStyle? architectureOverride = null)
             {
                 if (_shouldThrow) throw new InvalidOperationException("parse failed");
                 return Task.FromResult(_solution ?? new GeneratedSolution { Name = "Stub", RootNamespace = "R", Files = new List<GeneratedFile>() });
             }
 
+            /// <summary>
+            /// Generates a zip archive from the provided OpenAPI specification stream. If configured to throw, it will throw an InvalidOperationException to simulate a failure scenario.
+            /// </summary>
+            /// <param name="openApiSpec">The OpenAPI specification stream.</param>
+            /// <param name="architectureOverride">The architecture override.</param>
+            /// <returns>The generated zip archive.</returns>
+            /// <exception cref="InvalidOperationException">Thrown when the generator is configured to throw an exception.</exception>
             public async Task<GeneratedZipArchive> GenerateZipAsync(Stream openApiSpec, ApiForge.Domain.Enums.ArchitectureStyle? architectureOverride = null)
             {
                 if (_shouldThrow) throw new InvalidOperationException("parse failed");
@@ -108,6 +136,11 @@ namespace ApiForge.Tests.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a FormFile from the given string content. This is used to simulate file uploads in tests.
+        /// </summary>
+        /// <param name="content">The content of the file.</param>
+        /// <returns>The created FormFile.</returns>
         private static FormFile CreateFormFile(string content)
         {
             var bytes = Encoding.UTF8.GetBytes(content);
@@ -115,8 +148,18 @@ namespace ApiForge.Tests.Controllers
             return new FormFile(ms, 0, bytes.Length, "file", "test.yaml");
         }
 
+        /// <summary>
+        /// A dummy implementation of IOpenApiParser that returns a predefined ApiDefinition. 
+        /// This is used for testing purposes to simulate successful parsing of an OpenAPI specification.
+        /// </summary>
         private class DummyParser : IOpenApiParser
         {
+            /// <summary>
+            /// Parses the provided stream and returns a predefined ApiDefinition. 
+            /// This simulates successful parsing of an OpenAPI specification for testing purposes.
+            /// </summary>
+            /// <param name="stream">The stream to parse.</param>
+            /// <returns>The parsed ApiDefinition.</returns>
             public Task<ApiDefinition> ParseAsync(Stream stream)
             {
                 var def = new ApiDefinition { Title = "Test", Version = "1.0" };
@@ -124,18 +167,36 @@ namespace ApiForge.Tests.Controllers
             }
         }
 
+        /// <summary>
+        /// A dummy implementation of IOpenApiParser that throws an InvalidOperationException when ParseAsync is called. 
+        /// This is used for testing error handling in the controller.
+        /// </summary>
         private class ThrowingParser : IOpenApiParser
         {
+            /// <summary>
+            /// Parses the provided stream and throws an InvalidOperationException to simulate a parsing failure. 
+            /// This is used for testing error handling in the controller.
+            /// </summary>
+            /// <param name="stream">The stream to parse.</param>
+            /// <returns>The parsed ApiDefinition.</returns>
+            /// <exception cref="InvalidOperationException"></exception>
             public Task<ApiDefinition> ParseAsync(Stream stream)
             {
                 throw new InvalidOperationException("parse failed");
             }
         }
 
+        /// <summary>
+        /// A dummy implementation of ICodeGenerator that returns a predefined GeneratedSolution. 
+        /// This is used for testing purposes to simulate successful code generation from an OpenAPI specification.
+        /// </summary>
         private class DummyGenerator : ICodeGenerator
         {
             public GeneratedSolution Solution { get; }
 
+            /// <summary>
+            /// Initializes a new instance of the DummyGenerator class with a predefined GeneratedSolution.
+            /// </summary>
             public DummyGenerator()
             {
                 Solution = new GeneratedSolution
@@ -149,6 +210,11 @@ namespace ApiForge.Tests.Controllers
                 };
             }
 
+            /// <summary>
+            /// Generates a solution from the provided ApiDefinition. This implementation returns a predefined GeneratedSolution for testing purposes.
+            /// </summary>
+            /// <param name="definition"></param>
+            /// <returns></returns>
             public Task<GeneratedSolution> GenerateAsync(ApiDefinition definition)
             {
                 return Task.FromResult(Solution);

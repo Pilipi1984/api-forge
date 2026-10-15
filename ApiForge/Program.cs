@@ -6,8 +6,16 @@ using Asp.Versioning;
 
 namespace ApiForge.Api
 {
+    /// <summary>
+    /// The main entry point of the application.
+    /// </summary>
     public static partial class Program
     {
+        /// <summary>
+        /// The main entry point of the application.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         private static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);

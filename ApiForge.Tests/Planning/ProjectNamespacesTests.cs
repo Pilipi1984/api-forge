@@ -2,8 +2,14 @@ using ApiForge.Infrastructure.Generator.Planning;
 
 namespace ApiForge.Tests.Planning
 {
+    /// <summary>
+    /// Tests for the ProjectNamespaces class
+    /// </summary>
     public class ProjectNamespacesTests
     {
+        /// <summary>
+        /// Tests that the ClientsExtensionMethodName property uses the conventions defined in the ArchitectureConventions class
+        /// </summary>
         [Fact]
         public void ClientsExtensionMethodName_UsesConventions()
         {

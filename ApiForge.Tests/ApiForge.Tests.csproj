@@ -14,7 +14,7 @@
     <ProjectReference Include="..\ApiForge\ApiForge.Api.csproj" />
     <ProjectReference Include="..\ApiForge.Generator\ApiForge.Generator.csproj" />
     <ProjectReference Include="..\ApiForge.Infrastructure\ApiForge.Infrastructure.csproj" />
-    <ProjectReference Include="..\ApiForge.Application\ApiForge.ApplicationCore.csproj" />
+    <ProjectReference Include="..\ApiForge.Application\ApiForge.Application.csproj" />
     <ProjectReference Include="..\ApiForge.Domain\ApiForge.Domain.csproj" />
   </ItemGroup>
 

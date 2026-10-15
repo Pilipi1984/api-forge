@@ -6,8 +6,14 @@ using ApiForge.Tests.Helpers;
 
 namespace ApiForge.Tests.Integration
 {
+    /// <summary>
+    /// End-to-end tests for the API Forge application.
+    /// </summary>
     public class EndToEndTests
     {
+        /// <summary>
+        /// Tests the full pipeline of generating a zip file from an OpenAPI specification.
+        /// </summary>
         [Fact]
         public async Task FullPipeline_GeneratesZip()
         {

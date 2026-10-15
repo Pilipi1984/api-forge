@@ -1,11 +1,16 @@
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Generator.Planning;
-using Xunit;
 
 namespace ApiForge.Tests.Generators
 {
+    /// <summary>
+    /// Tests for the ProgramGenerator class
+    /// </summary>
     public class ProgramGeneratorTests
     {
+        /// <summary>
+        /// Tests that the Generate method includes service registration and necessary using statements in the generated Program.cs file.
+        /// </summary>
         [Fact]
         public void Generate_Includes_ServiceRegistration_And_Usings()
         {

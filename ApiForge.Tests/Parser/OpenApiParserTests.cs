@@ -3,8 +3,14 @@ using System.Text;
 
 namespace ApiForge.Tests.Parser
 {
+    /// <summary>
+    /// Unit tests for the <see cref="OpenApiParser"/> class.
+    /// </summary>
     public class OpenApiParserTests
     {
+        /// <summary>
+        /// Tests that the <see cref="OpenApiParser.ParseAsync(Stream)"/> method correctly parses a simple OpenAPI YAML document.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_ParsesSimpleYaml()
         {
@@ -18,6 +24,9 @@ namespace ApiForge.Tests.Parser
             Assert.Equal("Test", result.Title);
         }
 
+        /// <summary>
+        /// Tests that the <see cref="OpenApiParser.ParseAsync(Stream)"/> method throws an exception when given a null or empty YAML document.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_NullYaml()
         {

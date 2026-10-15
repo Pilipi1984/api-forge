@@ -3,8 +3,15 @@ using ApiForge.Domain.Models.ApiParameters;
 
 namespace ApiForge.Tests.Models.ApiParameters
 {
+    /// <summary>
+    /// Unit tests for the <see cref="ApiCookieParameter"/> class.
+    /// </summary>
     public class ApiCookieParameterTests
     {
+        /// <summary>
+        /// Tests that the constructor of <see cref="ApiCookieParameter"/> 
+        /// sets the <see cref="ApiParameter.Location"/> property to <see cref="ParameterLocation.Cookie"/>.
+        /// </summary>
         [Fact]
         public void Ctor_Default_SetsLocationToCookie()
         {
@@ -29,6 +36,9 @@ namespace ApiForge.Tests.Models.ApiParameters
             Assert.Null(param.Description);
         }
 
+        /// <summary>
+        /// Tests that the constructor of <see cref="ApiCookieParameter"/>
+        /// </summary>
         [Fact]
         public void Ctor_WhenInitializerProvidesLocation_InitializerOverridesConstructor()
         {

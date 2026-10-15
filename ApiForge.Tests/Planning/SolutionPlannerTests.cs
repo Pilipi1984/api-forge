@@ -5,8 +5,15 @@ using ApiForge.Infrastructure.Generator.Planning;
 
 namespace ApiForge.Tests.Planning
 {
+    /// <summary>
+    /// Tests for the SolutionPlanner class, which is responsible for creating 
+    /// a plan for generating code from an API definition.
+    /// </summary>
     public class SolutionPlannerTests
     {
+        /// <summary>
+        /// Tests that the CreatePlan method correctly groups endpoints by their route.
+        /// </summary>
         [Fact]
         public void CreatePlan_GroupsEndpoints_ByRoute()
         {
@@ -30,6 +37,9 @@ namespace ApiForge.Tests.Planning
             Assert.Contains(true, plan.Groups.Select(g => g.GroupName.Equals("Users", StringComparison.InvariantCultureIgnoreCase)));
         }
 
+        /// <summary>
+        /// Tests that the CreatePlan method correctly maps parameters and request body from the API definition to the plan.
+        /// </summary>
         [Fact]
         public void CreatePlan_ParametersAndRequestBody_AreMapped()
         {

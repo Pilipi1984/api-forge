@@ -17,7 +17,7 @@ namespace ApiForge.Infrastructure.Generator
         /// <summary>
         /// Generates the .csproj files for the Domain, Application, Infrastructure, and Client projects based on the provided root namespace.
         /// </summary>
-        /// <param name="rootNamespace"></param>
+        /// <param name="ns">The project namespaces.</param>
         /// <returns>Returns the list of generated project files.</returns>
         public static List<GeneratedFile> GenerateProjectFiles(ProjectNamespaces ns)
         {
@@ -65,6 +65,11 @@ namespace ApiForge.Infrastructure.Generator
         ];
         }
 
+        /// <summary>
+        /// Generates the .sln solution file that includes the Domain, Application, Infrastructure, and Client projects based on the provided root namespace.
+        /// </summary>
+        /// <param name="ns">The project namespaces.</param>
+        /// <returns>Generated solution file.</returns>
         public static GeneratedFile GenerateSolutionFile(ProjectNamespaces ns)
         {
             var domainGuid = Guid.NewGuid().ToString("B").ToUpperInvariant();

@@ -5,6 +5,9 @@
     /// </summary>
     public sealed record ArraySchema : ApiSchema
     {
+        /// <summary>
+        /// Gets the schema that describes the structure of the items in the array.
+        /// </summary>
         public required ApiSchema ItemSchema { get; init; }
     }
 }

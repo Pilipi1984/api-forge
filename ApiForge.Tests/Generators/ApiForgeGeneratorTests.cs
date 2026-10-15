@@ -8,8 +8,14 @@ using System.Text;
 
 namespace ApiForge.Tests.Generators
 {
+    /// <summary>
+    /// Tests for the ApiForgeGenerator class
+    /// </summary>
     public class ApiForgeGeneratorTests
     {
+        /// <summary>
+        /// Tests that the GenerateAsync method applies the architecture override correctly when generating a solution.
+        /// </summary>
         [Fact]
         public async Task GenerateAsync_Applies_ArchitectureOverride()
         {
@@ -25,6 +31,9 @@ namespace ApiForge.Tests.Generators
             Assert.Equal(ArchitectureStyle.Clean, received.Architecture);
         }
 
+        /// <summary>
+        /// Tests that the GenerateZipAsync method correctly packages the generated files into a zip archive.
+        /// </summary>
         [Fact]
         public async Task GenerateZipAsync_PackagesFilesCorrectly()
         {
@@ -48,6 +57,9 @@ namespace ApiForge.Tests.Generators
             Assert.Equal("console", content);
         }
 
+        /// <summary>
+        /// Tests that the GenerateAsync method throws an ArgumentNullException when a null stream is passed.
+        /// </summary>
         [Fact]
         public async Task GenerateAsync_Throws_OnNullStream()
         {
@@ -58,15 +70,32 @@ namespace ApiForge.Tests.Generators
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await apiForge.GenerateAsync(null!));
         }
 
-        private class ParserReturningDefinition : IOpenApiParser
+        /// <summary>
+        /// Tests that the GenerateZipAsync method throws an ArgumentNullException when a null stream is passed.
+        /// </summary>
+        [Fact]
+        public async Task GenerateZipAsync_Throws_OnNullStream()
         {
-            private readonly ArchitectureStyle _arch;
+            var parser = new ParserReturningDefinition();
+            var generator = new ReturningGeneratorWithFiles();
+            var apiForge = new ApiForgeGenerator(parser, generator);
 
-            public ParserReturningDefinition(ArchitectureStyle arch = ArchitectureStyle.Clean)
-            {
-                _arch = arch;
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await apiForge.GenerateZipAsync(null!));
+        }
 
+        /// <summary>
+        /// Tests that the GenerateZipAsync method throws an ArgumentException when an empty stream is passed.
+        /// </summary>
+        /// <param name="arch">the architecture style</param>
+        private class ParserReturningDefinition(ArchitectureStyle arch = ArchitectureStyle.Clean) : IOpenApiParser
+        {
+            private readonly ArchitectureStyle _arch = arch;
+
+            /// <summary>
+            /// Parses the provided stream and returns a dummy ApiDefinition with the specified architecture style.
+            /// </summary>
+            /// <param name="stream">The stream to parse.</param>
+            /// <returns>The parsed ApiDefinition.</returns>
             public Task<ApiDefinition> ParseAsync(Stream stream)
             {
                 var def = new ApiDefinition { Title = "T", Version = "1.0", Architecture = _arch };
@@ -74,10 +103,18 @@ namespace ApiForge.Tests.Generators
             }
         }
 
+        /// <summary>
+        /// A code generator that captures the received ApiDefinition for testing purposes.
+        /// </summary>
         private class CapturingGenerator : ICodeGenerator
         {
             public ApiDefinition? ReceivedDefinition { get; private set; }
 
+            /// <summary>
+            /// Generates a dummy solution and captures the received ApiDefinition.
+            /// </summary>
+            /// <param name="definition">The ApiDefinition to capture.</param>
+            /// <returns>The generated solution.</returns>
             public Task<GeneratedSolution> GenerateAsync(ApiDefinition definition)
             {
                 ReceivedDefinition = definition;
@@ -86,18 +123,26 @@ namespace ApiForge.Tests.Generators
             }
         }
 
+        /// <summary>
+        /// A code generator that returns a predefined solution with files for testing purposes.
+        /// </summary>
         private class ReturningGeneratorWithFiles : ICodeGenerator
         {
+            /// <summary>
+            /// Generates a predefined solution with files, ignoring the provided ApiDefinition.
+            /// </summary>
+            /// <param name="definition">The ApiDefinition to ignore.</param>
+            /// <returns>The generated solution.</returns>
             public Task<GeneratedSolution> GenerateAsync(ApiDefinition definition)
             {
                 var sol = new GeneratedSolution
                 {
                     Name = "MySolution",
                     RootNamespace = "MyRoot",
-                    Files = new List<GeneratedFile>
-                    {
-                        new GeneratedFile { RelativePath = "Project/Program.cs", Content = "console" }
-                    }
+                    Files =
+                    [
+                        new() { RelativePath = "Project/Program.cs", Content = "console" }
+                    ]
                 };
 
                 return Task.FromResult(sol);

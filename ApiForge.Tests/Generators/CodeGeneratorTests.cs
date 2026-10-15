@@ -3,8 +3,14 @@ using ApiForge.Domain.Models;
 
 namespace ApiForge.Tests.Generators
 {
+    /// <summary>
+    /// Tests for the <see cref="CodeGenerator"/> class.
+    /// </summary>
     public class CodeGeneratorTests
     {
+        /// <summary>
+        /// Tests that the GenerateAsync method returns a solution with files when given a valid ApiDefinition.
+        /// </summary>
         [Fact]
         public async Task GenerateAsync_ReturnsSolutionWithFiles()
         {

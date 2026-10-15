@@ -3,8 +3,16 @@ using ApiForge.Infrastructure.Generator.Resolvers;
 
 namespace ApiForge.Tests.Resolvers
 {
+    /// <summary>
+    /// Tests for the <see cref="CSharpTypeResolver"/> class.
+    /// </summary>
     public class CSharpTypeResolverTests
     {
+        /// <summary>
+        /// Tests that the NormalizePrimitive method correctly maps CLR types to C# primitive types.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="expected"></param>
         [Theory]
         [InlineData("String", "string")]
         [InlineData("Boolean", "bool")]
@@ -19,6 +27,9 @@ namespace ApiForge.Tests.Resolvers
             Assert.Equal(expected, actual);
         }
 
+        /// <summary>
+        /// Tests that the ResolveProperty method correctly appends a question mark for nullable properties.
+        /// </summary>
         [Fact]
         public void ResolveProperty_Nullable_AppendsQuestion()
         {
@@ -27,6 +38,9 @@ namespace ApiForge.Tests.Resolvers
             Assert.Equal("int?", type);
         }
 
+        /// <summary>
+        /// Tests that the Resolve method correctly resolves an array schema to a List of the appropriate type.
+        /// </summary>
         [Fact]
         public void Resolve_Array_ProducesList()
         {
@@ -35,6 +49,10 @@ namespace ApiForge.Tests.Resolvers
             Assert.Equal("List<int>", actual);
         }
 
+        /// <summary>
+        /// Tests that the Resolve method correctly resolves an enum schema to a string type 
+        /// when the OpenApiType is "string" and the schema is nullable.
+        /// </summary>
         [Fact]
         public void Resolve_Enum_IsString_WithNullable()
         {
@@ -43,6 +61,9 @@ namespace ApiForge.Tests.Resolvers
             Assert.Equal("string?", actual);
         }
 
+        /// <summary>
+        /// Tests that the Resolve method correctly resolves a reference schema to its full name within the specified models namespace.
+        /// </summary>
         [Fact]
         public void Resolve_Reference_ResolvesFullName()
         {

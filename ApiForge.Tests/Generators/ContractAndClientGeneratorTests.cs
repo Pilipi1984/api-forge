@@ -8,8 +8,16 @@ using Microsoft.OpenApi;
 
 namespace ApiForge.Tests.Generators
 {
+    /// <summary>
+    /// Tests for the contract and client generators
+    /// </summary>
     public class ContractAndClientGeneratorTests
     {
+        /// <summary>
+        /// Builds a solution plan for the given architecture style
+        /// </summary>
+        /// <param name="style">The architecture style</param>
+        /// <returns>The solution plan</returns>
         private static SolutionPlan BuildPlan(ArchitectureStyle style) =>
             SolutionPlanner.CreatePlan(new ApiDefinition
             {
@@ -43,6 +51,9 @@ namespace ApiForge.Tests.Generators
                 ]
             }, "Shop");
 
+        /// <summary>
+        /// Tests that the contract generator generates an interface with typed methods for the Clean architecture style
+        /// </summary>
         [Fact]
         public void Contract_Clean_GeneratesInterfaceWithTypedMethods()
         {
@@ -60,6 +71,9 @@ namespace ApiForge.Tests.Generators
                 file.Content);
         }
 
+        /// <summary>
+        /// Tests that the contract generator generates a port interface for the Hexagonal architecture style
+        /// </summary>
         [Fact]
         public void Contract_Hexagonal_GeneratesPort()
         {
@@ -70,6 +84,10 @@ namespace ApiForge.Tests.Generators
             Assert.Contains("public interface IPetsClientPort", file.Content);
         }
 
+        /// <summary>
+        /// Tests that the client implementation generator generates a client class that 
+        /// implements the interface for the Clean architecture style
+        /// </summary>
         [Fact]
         public void Client_Clean_GeneratesHttpImplementation()
         {
@@ -88,6 +106,10 @@ namespace ApiForge.Tests.Generators
             Assert.Contains("ReadFromJsonAsync<string>", file.Content);
         }
 
+        /// <summary>
+        /// Tests that the client implementation generator generates an adapter class 
+        /// that implements the port interface for the Hexagonal architecture style
+        /// </summary>
         [Fact]
         public void Client_Hexagonal_GeneratesAdapter()
         {
@@ -97,6 +119,11 @@ namespace ApiForge.Tests.Generators
             Assert.Contains("public sealed class PetsClientAdapter : IPetsClientPort", file.Content);
         }
 
+        /// <summary>
+        /// Tests that the client implementation generator maps HTTP methods to the correct HttpMethod expression
+        /// </summary>
+        /// <param name="method">The HTTP method</param>
+        /// <param name="expected">The expected HttpMethod expression</param>
         [Theory]
         [InlineData("GET", "HttpMethod.Get")]
         [InlineData("post", "HttpMethod.Post")]
@@ -120,6 +147,9 @@ namespace ApiForge.Tests.Generators
             Assert.Contains(expected, file.Content);
         }
 
+        /// <summary>
+        /// Tests that the generators produce no files when there are no endpoints defined in the API definition
+        /// </summary>
         [Fact]
         public void Generators_NoEndpoints_ProduceNoFiles()
         {
@@ -129,6 +159,9 @@ namespace ApiForge.Tests.Generators
             Assert.Empty(ApiClientImplementationGenerator.Generate(plan));
         }
 
+        /// <summary>
+        /// Tests that the solution planner uses the root group name for endpoints with a root route
+        /// </summary>
         [Fact]
         public void Planner_RootRoute_UsesRootGroup()
         {

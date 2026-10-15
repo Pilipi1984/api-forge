@@ -7,12 +7,26 @@
     /// </summary>
     internal static class QualifiedNameResolver
     {
+        /// <summary>
+        /// Represents the resolved name of a schema, including the class name and namespace segments.
+        /// </summary>
         public sealed record ResolvedName
         {
+            /// <summary>
+            /// Gets the resolved class name.
+            /// </summary>
             public required string ClassName { get; init; }
+            /// <summary>
+            /// Gets the list of namespace segments that precede the class name.
+            /// </summary>
             public required IReadOnlyList<string> NamespaceSegments { get; init; }
         }
 
+        /// <summary>
+        /// Resolves a potentially qualified schema name into its class name and namespace segments.
+        /// </summary>
+        /// <param name="fullName">The potentially qualified schema name.</param>
+        /// <returns>The resolved name.</returns>
         public static ResolvedName Resolve(string? fullName)
         {
             if (string.IsNullOrWhiteSpace(fullName))
@@ -37,11 +51,22 @@
             return new ResolvedName { ClassName = className, NamespaceSegments = namespaceSegments };
         }
 
+        /// <summary>
+        /// Builds a namespace string by combining the base namespace with the provided namespace segments.
+        /// </summary>
+        /// <param name="baseNamespace">The base namespace.</param>
+        /// <param name="namespaceSegments">The namespace segments.</param>
+        /// <returns>The combined namespace string.</returns>
         public static string BuildNamespace(string baseNamespace, IReadOnlyList<string> namespaceSegments) =>
             namespaceSegments.Count == 0
                 ? baseNamespace
                 : $"{baseNamespace}.{string.Join('.', namespaceSegments)}";
 
+        /// <summary>
+        /// Builds a folder path string by joining the provided namespace segments with '/' and prepending a leading '/'.
+        /// </summary>
+        /// <param name="namespaceSegments">The namespace segments.</param>
+        /// <returns>The combined folder path string.</returns>
         public static string BuildFolderPath(IReadOnlyList<string> namespaceSegments) =>
             namespaceSegments.Count == 0
                 ? string.Empty

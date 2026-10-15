@@ -4,8 +4,15 @@ using ApiForge.Infrastructure.Generator.Planning;
 
 namespace ApiForge.Tests.Generators
 {
+    /// <summary>
+    /// Tests for the DomainModelGenerator class
+    /// </summary>
     public class DomainModelGeneratorTests
     {
+        /// <summary>
+        /// Tests that the Generate method creates files for the specified models in the API definition
+        /// </summary>
+        /// <param name="modelName"></param>
         [Theory]
         [InlineData("Person")]
         [InlineData("Order")]
@@ -30,6 +37,9 @@ namespace ApiForge.Tests.Generators
             Assert.Contains(true, files.Select(f => f.RelativePath.Contains(modelName)));
         }
 
+        /// <summary>
+        /// Tests that the Generate method handles duplicate property names by renaming them to unique names
+        /// </summary>
         [Fact]
         public void Generate_Handles_DuplicatePropertyNames()
         {
@@ -62,6 +72,9 @@ namespace ApiForge.Tests.Generators
             Assert.Contains(true, new bool[] { content.Contains(" public int Id "), content.Contains(" public int Id1 ") });
         }
 
+        /// <summary>
+        /// Tests that the Generate method includes default assignment for string properties in the generated model class
+        /// </summary>
         [Fact]
         public void Generate_Includes_DefaultAssignment_ForString()
         {

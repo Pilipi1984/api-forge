@@ -7,6 +7,9 @@ using System.Text;
 
 namespace ApiForge.Tests.Parser
 {
+    /// <summary>
+    /// Tests for the OpenApiParser class, verifying that it correctly maps OpenAPI specifications to the internal API definition model.
+    /// </summary>
     public class OpenApiParserMappingTests
     {
         private const string Spec = """
@@ -102,15 +105,29 @@ namespace ApiForge.Tests.Parser
                       format: float
             """;
 
+        /// <summary>
+        /// Parses the given OpenAPI YAML specification into an ApiDefinition object asynchronously.
+        /// </summary>
+        /// <param name="yaml">The OpenAPI YAML specification.</param>
+        /// <returns>The parsed ApiDefinition object.</returns>
         private static async Task<ApiDefinition> ParseAsync(string yaml)
         {
             using var ms = new MemoryStream(Encoding.UTF8.GetBytes(yaml));
             return await new OpenApiParser().ParseAsync(ms);
         }
 
+        /// <summary>
+        /// Generates a minimal OpenAPI YAML specification with the provided extra content.
+        /// </summary>
+        /// <param name="extra">The extra content to include in the YAML specification.</param>
+        /// <returns>The generated OpenAPI YAML specification.</returns>
         private static string Minimal(string extra) =>
             $"openapi: 3.0.0\n{extra}\ninfo:\n  title: A\n  version: '1'\npaths: {{}}";
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly maps the OpenAPI specification to an ApiDefinition 
+        /// object, including title, version, architecture style, and endpoint count.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_MapsInfoAndDefaultsToCleanArchitecture()
         {
@@ -122,6 +139,10 @@ namespace ApiForge.Tests.Parser
             Assert.Equal(4, def.Endpoints.Count);
         }
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly maps component schemas defined in the OpenAPI 
+        /// specification to ApiModel objects, including property names, types, and required status.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_MapsComponentSchemasToModels()
         {
@@ -143,6 +164,9 @@ namespace ApiForge.Tests.Parser
             Assert.Equal("float", model.Properties.Single(p => p.Name == "total").Type);
         }
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly maps endpoint parameters by their location (path, query, header, cookie)
+        /// </summary>
         [Fact]
         public async Task ParseAsync_MapsEndpointParametersByLocation()
         {
@@ -162,6 +186,9 @@ namespace ApiForge.Tests.Parser
             Assert.Single(ep.Parameters.OfType<ApiCookieParameter>());
         }
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly maps a response that references a component schema to a ReferenceSchema object.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_MapsReferenceResponse()
         {
@@ -172,6 +199,9 @@ namespace ApiForge.Tests.Parser
             Assert.Equal("Order", response.ReferenceName);
         }
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly maps an inline object request body and an array response to their respective schema types.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_MapsInlineObjectRequestBodyAndArrayResponse()
         {
@@ -185,6 +215,9 @@ namespace ApiForge.Tests.Parser
             Assert.IsType<ReferenceSchema>(array.ItemSchema);
         }
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly maps enum and primitive responses to their respective schema types.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_MapsEnumAndPrimitiveResponses()
         {
@@ -200,6 +233,12 @@ namespace ApiForge.Tests.Parser
             Assert.Equal("int", primitive.ClrType);
         }
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly reads the x-architecture extension from the 
+        /// OpenAPI specification and maps it to the corresponding ArchitectureStyle enum value.
+        /// </summary>
+        /// <param name="extension">The x-architecture extension value</param>
+        /// <param name="expected">The expected ArchitectureStyle value</param>
         [Theory]
         [InlineData("x-architecture: hexagonal", ArchitectureStyle.Hexagonal)]
         [InlineData("x-architecture: ports-and-adapters", ArchitectureStyle.Hexagonal)]
@@ -211,7 +250,10 @@ namespace ApiForge.Tests.Parser
 
             Assert.Equal(expected, def.Architecture);
         }
-
+        
+        /// <summary>
+        /// Tests that the ParseAsync method correctly reads the x-architecture extension from the info section of the
+        /// </summary>
         [Fact]
         public async Task ParseAsync_ReadsXArchitectureFromInfo()
         {
@@ -222,6 +264,10 @@ namespace ApiForge.Tests.Parser
             Assert.Equal(ArchitectureStyle.Hexagonal, def.Architecture);
         }
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly infers the architecture style 
+        /// based on tags when no x-architecture extension is provided.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_UsesTagHeuristic_WhenNoExtension()
         {
@@ -230,6 +276,9 @@ namespace ApiForge.Tests.Parser
             Assert.Equal(ArchitectureStyle.Hexagonal, def.Architecture);
         }
 
+        /// <summary>
+        /// Tests that the ParseAsync method correctly prioritizes the x-architecture extension over tag heuristics when both are present.
+        /// </summary>
         [Fact]
         public async Task ParseAsync_ExplicitExtension_WinsOverTagHeuristic()
         {

@@ -5,8 +5,14 @@ using Microsoft.OpenApi;
 
 namespace ApiForge.Tests.Models.ApiParameters
 {
+    /// <summary>
+    /// Tests for the <see cref="ApiQueryParameter"/> class.
+    /// </summary>
     public class ApiQueryParameterTests
     {
+        /// <summary>
+        /// Tests that the constructor of <see cref="ApiQueryParameter"/> sets the Location property to ParameterLocation.Query.
+        /// </summary>
         [Fact]
         public void ApiQueryParameter_Ctor_WhenInvoked_SetsLocationToQuery()
         {
@@ -26,6 +32,10 @@ namespace ApiForge.Tests.Models.ApiParameters
             Assert.Equal(ParameterLocation.Query, sut.Location);
         }
 
+        /// <summary>
+        /// Tests that the constructor of <see cref="ApiQueryParameter"/> preserves the values 
+        /// of required properties and sets the default value of Explode to false.
+        /// </summary>
         [Fact]
         public void ApiQueryParameter_Ctor_PreservesInitValues_And_DefaultsExplodeToFalse()
         {

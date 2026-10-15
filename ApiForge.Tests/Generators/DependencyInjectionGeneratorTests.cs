@@ -3,8 +3,15 @@ using ApiForge.Infrastructure.Generator.Planning;
 
 namespace ApiForge.Tests.Generators
 {
+    /// <summary>
+    /// Tests for the DependencyInjectionGenerator class
+    /// </summary>
     public class DependencyInjectionGeneratorTests
     {
+        /// <summary>
+        /// Tests that the Generate method includes HttpClient registrations and the 
+        /// extension method name in the generated file.
+        /// </summary>
         [Fact]
         public void Generate_IncludesHttpClientRegistrations_AndExtensionName()
         {

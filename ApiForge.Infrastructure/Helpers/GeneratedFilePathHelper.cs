@@ -8,6 +8,13 @@
     /// </summary>
     internal static class GeneratedFilePathHelper
     {
+        /// <summary>
+        /// Builds the relative path of a generated file based on the project namespace, full namespace, and file name.
+        /// </summary>
+        /// <param name="projectNamespace">The root namespace of the project.</param>
+        /// <param name="fullNamespace">The full namespace of the file.</param>
+        /// <param name="fileName">The name of the file.</param>
+        /// <returns>The relative path of the generated file.</returns>
         public static string BuildRelativePath(string projectNamespace, string fullNamespace, string fileName)
         {
             var subFolder = GetSubFolder(projectNamespace, fullNamespace);
@@ -17,6 +24,12 @@
                 : $"{projectNamespace}/{subFolder}/{fileName}";
         }
 
+        /// <summary>
+        /// Gets the subfolder path based on the project namespace and full namespace.
+        /// </summary>
+        /// <param name="projectNamespace">The root namespace of the project.</param>
+        /// <param name="fullNamespace">The full namespace of the file.</param>
+        /// <returns>The subfolder path.</returns>
         private static string GetSubFolder(string projectNamespace, string fullNamespace)
         {
             if (string.Equals(projectNamespace, fullNamespace, StringComparison.Ordinal))

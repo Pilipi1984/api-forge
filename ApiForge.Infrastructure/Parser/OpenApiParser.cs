@@ -51,7 +51,7 @@ namespace ApiForge.Infrastructure.Parser
         /// <summary>
         /// Maps an OpenAPI document to an ApiDefinition.
         /// </summary>
-        /// <param name="doc"></param>
+        /// <param name="doc">The OpenAPI document to map.</param>
         /// <returns>Returns the mapped API definition.</returns>
         /// <exception cref="InvalidOperationException"></exception>
         private static ApiDefinition MapDefinition(OpenApiDocument? doc)
@@ -106,7 +106,7 @@ namespace ApiForge.Infrastructure.Parser
         /// 2. A weak fallback heuristic over tag names, only used when no explicit value is present.
         /// 3. Clean Architecture, as the safe default.
         /// </summary>
-        /// <param name="doc"></param>
+        /// <param name="doc">The OpenAPI document to analyze.</param>
         /// <returns>Returns the detected architecture style.</returns>
         private static ArchitectureStyle DetectArchitecture(OpenApiDocument doc)
         {
@@ -129,8 +129,8 @@ namespace ApiForge.Infrastructure.Parser
         /// Reads a vendor extension value as plain text, if present. Handles the JSON-backed
         /// extension representation used by Microsoft.OpenApi 3.x (System.Text.Json-based nodes).
         /// </summary>
-        /// <param name="extensions"></param>
-        /// <param name="key"></param>
+        /// <param name="extensions">The dictionary of extensions.</param>
+        /// <param name="key">The key of the extension to retrieve.</param>
         /// <returns>Returns the extension's raw string value, or null if not present.</returns>
         private static string? GetExtensionStringValue(IDictionary<string, IOpenApiExtension>? extensions, string key)
         {
@@ -153,9 +153,9 @@ namespace ApiForge.Infrastructure.Parser
         /// <summary>
         /// Maps an OpenAPI operation to an ApiEndpoint.
         /// </summary>
-        /// <param name="route"></param>
-        /// <param name="httpMethod"></param>
-        /// <param name="operation"></param>
+        /// <param name="route">The route for the API endpoint.</param>
+        /// <param name="httpMethod">The HTTP method for the API endpoint.</param>
+        /// <param name="operation">The OpenAPI operation to map.</param>
         /// <returns>Returns the mapped API endpoint.</returns>
         private static ApiEndpoint MapEndpoint(string route, string httpMethod, OpenApiOperation operation)
         {
@@ -189,7 +189,7 @@ namespace ApiForge.Infrastructure.Parser
         /// <summary>
         /// Maps an OpenAPI parameter to an ApiParameter.
         /// </summary>
-        /// <param name="p"></param>
+        /// <param name="p">The OpenAPI parameter to map.</param>
         /// <returns>Returns the mapped API parameter.</returns>
         /// <exception cref="InvalidOperationException"></exception>
         /// <exception cref="NotSupportedException"></exception>
@@ -249,7 +249,7 @@ namespace ApiForge.Infrastructure.Parser
         /// <summary>
         /// Maps an OpenAPI schema to an ApiSchema.
         /// </summary>
-        /// <param name="schema"></param>
+        /// <param name="schema">The OpenAPI schema to map.</param>
         /// <returns>Returns the mapped API schema.</returns>
         /// <exception cref="InvalidOperationException"></exception>
         private static ApiSchema MapSchema(IOpenApiSchema schema)
@@ -329,8 +329,8 @@ namespace ApiForge.Infrastructure.Parser
         /// <summary>
         /// Maps a primitive OpenAPI type and format to a corresponding C# type.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="format"></param>
+        /// <param name="type">The OpenAPI type.</param>
+        /// <param name="format">The format of the type.</param>
         /// <returns>Returns the mapped C# type.</returns>
         private static string MapPrimitiveClrType(JsonSchemaType? type, string? format) => (type, format) switch
         {
@@ -349,8 +349,8 @@ namespace ApiForge.Infrastructure.Parser
         /// <summary>
         /// Maps an OpenAPI schema to an ApiModel.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="schema"></param>
+        /// <param name="name">The name of the API model.</param>
+        /// <param name="schema">The OpenAPI schema to map.</param>
         /// <returns>Returns the mapped API model.</returns>
         private static ApiModel MapModel(string name, IOpenApiSchema schema)
         {
@@ -366,9 +366,9 @@ namespace ApiForge.Infrastructure.Parser
         /// <summary>
         /// Maps an OpenAPI schema property to an ApiProperty.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="schema"></param>
-        /// <param name="required"></param>
+        /// <param name="name">The name of the API property.</param>
+        /// <param name="schema">The OpenAPI schema to map.</param>
+        /// <param name="required">The set of required property names.</param>
         /// <returns>Returns the mapped API property.</returns>
         private static ApiProperty MapProperty(string name, IOpenApiSchema schema, ISet<string>? required)
         {

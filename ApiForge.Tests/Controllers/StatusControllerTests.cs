@@ -7,8 +7,14 @@ using ApiForge.ApplicationCore.Enums;
 
 namespace ApiForge.Tests.Controllers
 {
+    /// <summary>
+    /// Unit tests for the <see cref="StatusController"/> class.
+    /// </summary>
     public class StatusControllerTests
     {
+        /// <summary>
+        /// Tests that the Get method returns an OkObjectResult when called.
+        /// </summary>
         [Fact]
         public void Get_ReturnsOk()
         {
@@ -28,6 +34,9 @@ namespace ApiForge.Tests.Controllers
             Assert.IsType<OkObjectResult>(result);
         }
 
+        /// <summary>
+        /// Tests that the Get method returns a StatusResponse with expected values.
+        /// </summary>
         [Fact]
         public void Get_WhenCalled_ReturnsStatusResponseWithExpectedValues()
         {
@@ -58,6 +67,9 @@ namespace ApiForge.Tests.Controllers
             Assert.InRange(response.UtcTimestamp, now - TimeSpan.FromSeconds(5), now + TimeSpan.FromSeconds(5));
         }
 
+        /// <summary>
+        /// Tests that the Get method throws an InvalidOperationException when the IWebHostEnvironment is missing from the service provider.
+        /// </summary>
         [Fact]
         public void Get_WhenEnvironmentMissing_ThrowsInvalidOperationException()
         {

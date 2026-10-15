@@ -2,11 +2,14 @@
 using ApiForge.Domain.Enums;
 using ApiForge.Infrastructure.Helpers;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiForge.Api.Controllers
 {
+    /// <summary>
+    /// Controller for converting an uploaded OpenAPI spec into a generated .NET solution.
+    /// </summary>
+    /// <param name="generator">The API Forge generator.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/convert")]
@@ -27,7 +30,6 @@ namespace ApiForge.Api.Controllers
         /// ("x-architecture" extension, or the tag-name heuristic as fallback); "clean" or
         /// "hexagonal" forces that style regardless of what the spec says.
         /// </param>
-        /// <param name="cancellationToken"></param>
         [HttpPost]
         [RequestSizeLimit(MaxSpecSizeBytes)]
         [RequestFormLimits(MultipartBodyLengthLimit = MaxSpecSizeBytes)]

@@ -5,8 +5,16 @@ using ApiForge.Infrastructure.Generator;
 
 namespace ApiForge.Tests.Generators
 {
+    /// <summary>
+    /// Tests for the CodeGenerator pipeline, verifying that it produces the expected project 
+    /// layout based on different architecture styles.
+    /// </summary>
     public class CodeGeneratorPipelineTests
     {
+        /// <summary>
+        /// Provides test data for different architecture styles and their expected project layouts,
+        /// including the paths for the contract, client, and dependency injection files.
+        /// </summary>
         public static TheoryData<ArchitectureStyle, string, string, string> Layouts => new()
         {
             {
@@ -23,6 +31,13 @@ namespace ApiForge.Tests.Generators
             }
         };
 
+        /// <summary>
+        /// Tests that the CodeGenerator produces the expected project layout for a given architecture style.
+        /// </summary>
+        /// <param name="style">The architecture style to test.</param>
+        /// <param name="contractPath">The expected path for the contract file.</param>
+        /// <param name="clientPath">The expected path for the client file.</param>
+        /// <param name="diPath">The expected path for the dependency injection file.</param>
         [Theory]
         [MemberData(nameof(Layouts))]
         public async Task GenerateAsync_ProducesExpectedLayout(
@@ -64,10 +79,17 @@ namespace ApiForge.Tests.Generators
             Assert.Contains("Shop.Client/Program.cs", paths);
         }
 
+        /// <summary>
+        /// Tests that the CodeGenerator throws an ArgumentNullException when a null ApiDefinition is passed to GenerateAsync.
+        /// </summary>
         [Fact]
         public async Task GenerateAsync_NullDefinition_Throws() =>
             await Assert.ThrowsAsync<ArgumentNullException>(() => new CodeGenerator().GenerateAsync(null!));
 
+        /// <summary>
+        /// Tests that the GenerateSolutionFile method correctly lists four projects 
+        /// in the generated solution file for a given project namespace.
+        /// </summary>
         [Fact]
         public void GenerateSolutionFile_ListsFourProjects()
         {

@@ -3,8 +3,14 @@ using ApiForge.Infrastructure.Generator.Planning;
 
 namespace ApiForge.Tests.Planning
 {
+    /// <summary>
+    /// Tests for the ArchitectureConventions class
+    /// </summary>
     public class ArchitectureConventionsTests
     {
+        /// <summary>
+        /// Test cases for the For method
+        /// </summary>
         public static TheoryData<ArchitectureStyle, string, string, string, string, string> Cases => new()
         {
             { ArchitectureStyle.Clean, "IPaymentsClient", "PaymentsClient", "AddAcmeClients",
@@ -13,6 +19,15 @@ namespace ApiForge.Tests.Planning
               "Application.Ports.Driven", "Infrastructure.Adapters.Driven" }
         };
 
+        /// <summary>
+        /// Tests that the For method returns the expected conventions for each architecture style
+        /// </summary>
+        /// <param name="style">The architecture style.</param>
+        /// <param name="iface">The expected interface name.</param>
+        /// <param name="cls">The expected class name.</param>
+        /// <param name="ext">The expected extension method name.</param>
+        /// <param name="ifaceNs">The expected interface namespace suffix.</param>
+        /// <param name="implNs">The expected implementation namespace suffix.</param>
         [Theory]
         [MemberData(nameof(Cases))]
         public void For_ReturnsExpectedConventions(
@@ -27,6 +42,9 @@ namespace ApiForge.Tests.Planning
             Assert.Equal(implNs, c.ImplementationNamespaceSuffix);
         }
 
+        /// <summary>
+        /// Tests that the For method falls back to Clean conventions for unknown architecture styles
+        /// </summary>
         [Fact]
         public void For_UnknownStyle_FallsBackToClean()
         {
@@ -35,6 +53,9 @@ namespace ApiForge.Tests.Planning
             Assert.Equal("IPaymentsClient", c.InterfaceName("Payments"));
         }
 
+        /// <summary>
+        /// Tests that the ProjectNamespaces class uses the correct namespaces for Hexagonal architecture
+        /// </summary>
         [Fact]
         public void ProjectNamespaces_Hexagonal_UsesPortsAndAdaptersNamespaces()
         {
