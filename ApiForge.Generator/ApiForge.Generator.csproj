@@ -21,7 +21,6 @@
 		<PackageProjectUrl>https://github.com/Pilipi1984/api-forge</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<AssemblyOriginatorKeyFile>C:\Users\pilip\source\PrivateKeys\sgKey.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>
