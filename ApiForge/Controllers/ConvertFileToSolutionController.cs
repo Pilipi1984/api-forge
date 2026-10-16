@@ -3,6 +3,7 @@ using ApiForge.Domain.Enums;
 using ApiForge.Infrastructure.Helpers;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ApiForge.Api.Controllers
 {
@@ -10,14 +11,18 @@ namespace ApiForge.Api.Controllers
     /// Controller for converting an uploaded OpenAPI spec into a generated .NET solution.
     /// </summary>
     /// <param name="generator">The API Forge generator.</param>
+    /// <param name="logger">The logger.</param>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/convert")]
-    public class ConvertFileToSolutionController(IApiForgeGenerator generator) : ControllerBase
+    public partial class ConvertFileToSolutionController(IApiForgeGenerator generator,
+    ILogger<ConvertFileToSolutionController>? logger = null) : ControllerBase
     {
         private const long MaxSpecSizeBytes = 5 * 1024 * 1024; // 5 MB
 
         private readonly IApiForgeGenerator _generator = generator;
+        private readonly ILogger<ConvertFileToSolutionController> _logger =
+            logger ?? NullLogger<ConvertFileToSolutionController>.Instance;
 
 
         /// <summary>
@@ -54,6 +59,7 @@ namespace ApiForge.Api.Controllers
                 {
                     if (!ArchitectureStyleParser.TryParse(architecture, out var selectedStyle))
                     {
+                        LogInvalidArchitecture(architecture);
                         return BadRequest(new { error = $"Unrecognized architecture value: '{architecture}'. Use 'auto', 'clean' or 'hexagonal'." });
                     }
 
@@ -67,8 +73,18 @@ namespace ApiForge.Api.Controllers
             }
             catch (Exception ex)
             {
+                LogConversionFailed(ex, file.FileName, file.Length);
                 return BadRequest(new { error = $"Failed to generate solution: {ex.Message}" });
             }
         }
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Convert request without a file")]
+        private partial void LogMissingFile();
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Unrecognized architecture value '{architecture}'")]
+        private partial void LogInvalidArchitecture(string? architecture);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Failed to generate solution from '{fileName}' ({length} bytes)")]
+        private partial void LogConversionFailed(Exception ex, string fileName, long length);
     }
 }

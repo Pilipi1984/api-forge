@@ -9,7 +9,12 @@
     <PackageIcon>openapi-dotnet-api-icon.png</PackageIcon>
     <PackageTags>API, OpenApi, Generate, .NET, C#, </PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <ApplicationIcon>openapi-dotnet-api-icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="openapi-dotnet-api-icon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\Resources\openapi-dotnet-api-icon.png">

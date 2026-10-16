@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.OpenApi" Version="3.10.2" />
     <PackageReference Include="Microsoft.OpenApi.YamlReader" Version="3.10.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
   </ItemGroup>
 
 </Project>

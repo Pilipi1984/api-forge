@@ -1,8 +1,11 @@
 ﻿using ApiForge.Application.Interfaces;
+using ApiForge.Domain.Enums;
 using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Domain.Models;
 using ApiForge.Infrastructure.Generator.Planning;
 using ApiForge.Infrastructure.Helpers;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ApiForge.Infrastructure.Generator
 {
@@ -10,8 +13,14 @@ namespace ApiForge.Infrastructure.Generator
     /// Generates a complete C# solution based on the provided API definition, including domain models, 
     /// API contracts, client implementations, dependency injection setup, and project files.
     /// </summary>
-    public class CodeGenerator : ICodeGenerator
+    public partial class CodeGenerator(ILogger<CodeGenerator>? logger = null) : ICodeGenerator
     {
+        /// <summary>
+        /// The logger instance used for logging within the CodeGenerator class. If no logger is provided,
+        /// a NullLogger instance is used to avoid null reference exceptions.
+        /// </summary>
+        private readonly ILogger<CodeGenerator> _logger = logger ?? NullLogger<CodeGenerator>.Instance;
+
         /// <summary>
         /// Generates a complete C# solution based on the provided API definition.
         /// </summary>
@@ -23,6 +32,7 @@ namespace ApiForge.Infrastructure.Generator
 
             var rootNamespace = NameHelper.ToSolutionName(definition.Title);
             var plan = SolutionPlanner.CreatePlan(definition, rootNamespace);
+            LogPlanCreated(rootNamespace, plan.Style, plan.Groups.Count);
             var ns = plan.Namespaces;
 
             var files = new List<GeneratedFile>();
@@ -41,7 +51,17 @@ namespace ApiForge.Infrastructure.Generator
                 Files = files
             };
 
+            LogGenerated(rootNamespace, files.Count);
             return Task.FromResult(solution);
         }
+
+
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Planning solution {solution} with style {style}: {groupCount} client groups")]
+        private partial void LogPlanCreated(string solution, ArchitectureStyle style, int groupCount);
+
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Generated solution {solution}: {fileCount} files")]
+        private partial void LogGenerated(string solution, int fileCount);
     }
 }

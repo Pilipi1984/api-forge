@@ -12,11 +12,11 @@ namespace ApiForge.Infrastructure.Parser
     /// <summary>
     /// Parses OpenAPI documents and maps them to the internal API definition model.
     /// </summary>
-    public class OpenApiParser : IOpenApiParser
+    public partial class OpenApiParser : IOpenApiParser
     {
         private const string Object = "object";
         private const string StringTypename = "string";
-        private const string ArchitectureExtensionKey = "x-architecture";
+        private const string ArchitectureExtensionKey = "x-architecture"; 
 
         /// <summary>
         /// Tag-name substrings that, in the absence of an explicit "x-architecture" extension,
@@ -42,10 +42,13 @@ namespace ApiForge.Infrastructure.Parser
             {
                 throw new InvalidOperationException(
                     "OpenAPI document could not be parsed: " +
-                    string.Join(", ", result.Diagnostic?.Errors.Select(e => e.Message) ?? Enumerable.Empty<string>()));
+                    string.Join(", ", result.Diagnostic?.Errors.Select(e => e.Message) ?? []));
             }
 
-            return MapDefinition(result.Document);
+            var definition = MapDefinition(result.Document);
+            LogParsed(definition.Title, definition.Version, definition.Endpoints.Count,
+                definition.Models.Count, definition.Architecture);
+            return definition;
         }
 
         /// <summary>

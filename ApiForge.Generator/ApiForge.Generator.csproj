@@ -28,6 +28,10 @@
 		<ProjectReference Include="..\ApiForge.Application\ApiForge.Application.csproj" />
 		<ProjectReference Include="..\ApiForge.Infrastructure\ApiForge.Infrastructure.csproj" />
 	</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
 	
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\" />

@@ -3,6 +3,8 @@ using ApiForge.Domain.Enums;
 using ApiForge.Domain.GeneratedApiSolution;
 using ApiForge.Infrastructure.Generator;
 using ApiForge.Infrastructure.Parser;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.IO.Compression;
 
 namespace ApiForge.Generator
@@ -14,10 +16,13 @@ namespace ApiForge.Generator
     /// <remarks>
     /// Creates a generator with custom implementations (useful for testing or DI).
     /// </remarks>
-    public sealed class ApiForgeGenerator(IOpenApiParser parser, ICodeGenerator generator) : IApiForgeGenerator
+    public sealed partial class ApiForgeGenerator(IOpenApiParser parser,
+        ICodeGenerator generator,
+        ILogger<ApiForgeGenerator>? logger = null) : IApiForgeGenerator
     {
         private readonly IOpenApiParser _parser = parser ?? throw new ArgumentNullException(nameof(parser));
         private readonly ICodeGenerator _generator = generator ?? throw new ArgumentNullException(nameof(generator));
+        private readonly ILogger<ApiForgeGenerator> _logger = logger ?? NullLogger<ApiForgeGenerator>.Instance;
 
         /// <summary>
         /// Creates a generator using the default implementations of parser and code generator.
@@ -43,6 +48,7 @@ namespace ApiForge.Generator
                 definition.Architecture = architectureOverride.Value;
             }
 
+            LogArchitectureOverride(definition.Architecture, architectureOverride ?? definition.Architecture);
             return await _generator.GenerateAsync(definition);
         }
 
@@ -67,11 +73,20 @@ namespace ApiForge.Generator
                 }
             }
 
+            LogZipCreated(solution.Name, solution.Files.Count, memoryStream.Length);
             return new GeneratedZipArchive
             {
                 Name = solution.Name,
                 Content = memoryStream.ToArray()
             };
         }
+
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Architecture override applied: {detected} -> {selected}")]
+        private partial void LogArchitectureOverride(ArchitectureStyle detected, ArchitectureStyle selected);
+
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Zip created for {Solution}: {fileCount} files, {sizeBytes} bytes")]
+        private partial void LogZipCreated(string solution, int fileCount, long sizeBytes);
     }
 }
