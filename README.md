@@ -248,9 +248,16 @@ GitHub Actions workflows run on every push and pull request:
 To release, create and push a tag:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.0.X
+git push origin v1.0.X
 ```
+
+## Nuget packages
+
+[![NuGet](https://img.shields.io/nuget/v/ApiForge.Application.svg)](https://www.nuget.org/packages/ApiForge.Application)
+[![NuGet](https://img.shields.io/nuget/v/ApiForge.Domain.svg)](https://www.nuget.org/packages/ApiForge.Domain)
+[![NuGet](https://img.shields.io/nuget/v/ApiForge.Generator.svg)](https://www.nuget.org/packages/ApiForge.Generator)
+[![NuGet](https://img.shields.io/nuget/v/ApiForge.Intrastructure.svg)](https://www.nuget.org/packages/ApiForge.Intrastructure)
 
 ## Current limitations
 
@@ -274,7 +281,6 @@ The roadmap is directional rather than a commitment, and priorities may change b
 
 ### Next
 
-- [ ] First stable release (`v1.0.0`) of the NuGet packages
 - [ ] Generate real C# `enum` types from enum schemas
 - [ ] Generate types for inline object schemas instead of falling back to `object`
 - [ ] Support nested `$ref` and array properties in domain models
