@@ -257,7 +257,7 @@ git push origin v1.0.X
 [![NuGet](https://img.shields.io/nuget/v/ApiForge.Application.svg)](https://www.nuget.org/packages/ApiForge.Application)
 [![NuGet](https://img.shields.io/nuget/v/ApiForge.Domain.svg)](https://www.nuget.org/packages/ApiForge.Domain)
 [![NuGet](https://img.shields.io/nuget/v/ApiForge.Generator.svg)](https://www.nuget.org/packages/ApiForge.Generator)
-[![NuGet](https://img.shields.io/nuget/v/ApiForge.Intrastructure.svg)](https://www.nuget.org/packages/ApiForge.Intrastructure)
+[![NuGet](https://img.shields.io/nuget/v/ApiForge.Infrastructure.svg)](https://www.nuget.org/packages/ApiForge.Infrastructure)
 
 ## Current limitations
 
